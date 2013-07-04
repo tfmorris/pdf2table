@@ -1,0 +1,2 @@
+Class-Path: jdom.jar
+Main-Class: a_converter
