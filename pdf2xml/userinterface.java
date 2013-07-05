@@ -24,10 +24,16 @@
 
 package pdf2xml;
 
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Dialog;
+import java.awt.FileDialog;
 import java.awt.Frame;
-import java.awt.*;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter; 
 
 public class userinterface extends Frame{
 	

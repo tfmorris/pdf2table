@@ -7,19 +7,27 @@
 
 package pdf2xml;
 
-import java.io.*;
-import java.io.BufferedReader;
-import java.util.*;
-import java.lang.Integer;
-import org.jdom.*;
-import org.jdom.input.SAXBuilder;
+import java.awt.Button;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsConfiguration;
-import java.awt.Dialog;
 import java.awt.Label;
-import java.awt.Button;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Vector;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 
 class top_comparator implements Comparator  {

@@ -7,12 +7,13 @@
 
 package pdf2xml;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter; 
-import java.util.*;
-import java.lang.*;
 
 public class edit_table_content extends Frame{
 	

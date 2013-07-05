@@ -7,12 +7,18 @@
 
 package pdf2xml;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.TextField;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter; 
-import java.util.*;
-import java.lang.*;
 
 
 public class edit_table_cell extends Frame{

@@ -7,7 +7,6 @@
 
 package pdf2xml;
 
-import java.util.*;
 
 public class Multiline_Block {
 	

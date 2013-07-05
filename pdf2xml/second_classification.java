@@ -24,10 +24,8 @@
 
 package pdf2xml;
 
-import java.util.*;
-import java.io.*;
-import java.lang.*;
-import java.awt.*;
+import java.io.PrintStream;
+import java.util.Vector;
 
 public class second_classification {
 	PrintStream dos;

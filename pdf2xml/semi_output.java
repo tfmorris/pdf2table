@@ -7,12 +7,20 @@
 
 package pdf2xml;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.event.WindowEvent;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.ScrollPane;
+import java.awt.TextArea;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
-import java.util.*;
-import java.lang.*;
+import java.awt.event.WindowEvent;
+import java.util.Vector;
 
 public class semi_output extends Frame{
 

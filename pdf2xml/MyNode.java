@@ -7,7 +7,7 @@
 
 package pdf2xml;
 
-import java.util.*;
+import java.util.Vector;
 
 public class MyNode {
 

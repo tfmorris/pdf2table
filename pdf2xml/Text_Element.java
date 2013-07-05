@@ -7,8 +7,7 @@
 
 package pdf2xml;
 
-import java.lang.*;
-import java.util.*;
+import java.util.Vector;
 
 public class Text_Element {
 	
