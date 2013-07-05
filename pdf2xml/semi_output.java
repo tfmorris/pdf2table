@@ -170,7 +170,7 @@ Table undo_table;
         button_panel.add(note3);
         button_panel.add(note4);
 
-		this.sc = new ScrollPane(ScrollPane.SCROLLBARS_ALWAYS);
+        this.sc = new ScrollPane(ScrollPane.SCROLLBARS_ALWAYS);
 		this.sc.getVAdjustable().setUnitIncrement(10);
 		this.sc.getHAdjustable().setUnitIncrement(10);
 		this.sc.setBounds(5,25,795,670);
@@ -209,7 +209,7 @@ Table undo_table;
                break;
              }
              i++;	
-            }         
+            } // end of while
             if (i > prev.datarow_begin) { 
               prev.datarow_begin = i;
             }
@@ -347,7 +347,6 @@ Table undo_table;
          Label l1 = new Label("" + k, Label.CENTER);
          this.table_panel.add(l1);
          l1.setBounds(40,label_top,20,20);
-
          
          Checkbox checkbox = new Checkbox();    
          checkbox.setBounds(20,label_top,20,20);                
@@ -376,8 +375,6 @@ Table undo_table;
            ta.setEditable(false);
            this.table_panel.add(ta);     
 
-
-           
            if (current_t.colspan > 1) {
            	 for (int n=1;n<current_t.colspan;n++) {    
            	  if (m+n < t.columns.size()) {       	   	
@@ -421,8 +418,8 @@ Table undo_table;
         title_field.setBackground(color1);
         title_field.setText(t.title);
         table_panel.add(title_field);
-              
-       this.table_panel.setSize(labels_start, label_top);
+
+        this.table_panel.setSize(labels_start, label_top);
        this.sc.validate();
      }
      catch (Exception e) {

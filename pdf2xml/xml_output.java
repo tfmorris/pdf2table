@@ -38,7 +38,7 @@ PrintStream dos3;
 
    	public void create_stylesheet() {
 	  try {
-	  	File my_file = new File(this.path + "\\table_view.xsl");
+	  	File my_file = new File(this.path, "table_view.xsl");
 	    this.dos2 = new PrintStream(new FileOutputStream(my_file));		
 	    
 	    String xsl_value = "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>\n" +	        
@@ -50,9 +50,11 @@ PrintStream dos3;
           "<xsl:for-each select=\"tables/table\">\n" +
           "<table border=\"1\">\n" + 
           "<caption>\n" +
+          // TODO: Next 3 lines windows version only - need to resolve discrepancy
           "<xsl:value-of select=\"page\"/>\n" +
           "</caption>\n" +             
           "<caption>\n" +
+          // End Windows version only code
           "<xsl:value-of select=\"title\"/>\n" +
           "</caption>\n" +     
           "<xsl:for-each select=\"header/header_line\">\n" +
@@ -112,7 +114,7 @@ PrintStream dos3;
    	   	
    	public void create_tables_dtd() {
 	  try {
-	  	File my_file = new File(this.path + "\\tables.dtd");
+	  	File my_file = new File(this.path, "tables.dtd");
 	    this.dos3 = new PrintStream(new FileOutputStream(my_file));		
 
         String dtd_value = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
@@ -157,7 +159,7 @@ PrintStream dos3;
    	public void create_output() {
    		
 	  try {
-	  	File my_file = new File(this.path + "\\output.xml");
+	  	File my_file = new File(this.path, "output.xml");
 		System.out.println(my_file.toString());
 	    this.dos = new PrintStream(new FileOutputStream(my_file),true,"UTF-16");		
 	    
@@ -183,6 +185,8 @@ PrintStream dos3;
          
          dos.println("<page>" + "TABLE ON PAGE " + c_table.page + "</page>");
          dos.println("<title>" + c_table.title + "</title>");
+         // Mac version below
+//         dos.println("<title>" + "TABLE ON PAGE " + c_table.page + "</title>");
  
 		 dos.println("<header>");		     
 		 
@@ -191,9 +195,7 @@ PrintStream dos3;
 			dos.println("<header_line>");
 			while (p < c_table.columns.size()) {
 			   Column cc1 = (Column) c_table.columns.elementAt(p);
-			   
 			   cells_on_column = cc1.cells.size();
-			   
 			   cc1.header = p+j;
 			   Text_Element t1 = (Text_Element) cc1.cells.elementAt(j);
 			   dos.println("<header_element id=\"" + (p+j) + "\" sh=\"" + cc1.header); 

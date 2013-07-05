@@ -131,7 +131,6 @@ List current_text_elements;
       	   String color = font.getAttribute("color").getValue();
            Font f = new Font(page_number,id,size,family,color);
            this.fonts.addElement(f);
-
         } // end of while
       
       	this.current_text_elements  = page.getChildren("text"); 
@@ -244,7 +243,6 @@ List current_text_elements;
               	  t.elements.clear();           	
               	}              	
               } 
-              
               	              	
               if (l.texts.size() > 1) {
               	// multi-line
@@ -298,7 +296,13 @@ List current_text_elements;
         	   	 } // end of for
                  if (control == false) {
 				 
-
+					
+				/*	if (belongs == 1)  {
+                        Multiline_Block current_mlb = (Multiline_Block) this.mlbs.lastElement();
+                        actualize_mlb_values(current_mlb, l);
+					 }			 
+					 else {*/
+					 //if (belongs == 0 || count_single_lines > 5) {
                        Multiline_Block current_mlb = (Multiline_Block) this.mlbs.lastElement();                
                        int mlb_element_count = current_mlb.end - current_mlb.begin;
                        if (mlb_element_count > 0) {
@@ -308,7 +312,7 @@ List current_text_elements;
                          current_mlb.avg_distance = d;                  	
                        }
                        multi_modus = false;      
- 	   	 
+					// }    	   	 
                   }
         	   }	
         	   else {
@@ -323,12 +327,9 @@ List current_text_elements;
           lines_before = this.lines.size();
       } // end of while pages
       
- 
-    
-  
+
      multiline_block_merge();
 
-             
      second_classification sc = new second_classification(this.interactive_extraction, this.path);
       
      sc.fonts = (Vector) this.fonts.clone();
@@ -758,7 +759,7 @@ List current_text_elements;
 	  try {
 	  BufferedReader br = new BufferedReader(new FileReader(this.pdftohtml_file_name));
 
-      PrintStream dos = new PrintStream(new FileOutputStream(new File(this.path + "\\" + "debugged_output.xml")));
+      PrintStream dos = new PrintStream(new FileOutputStream(new File(this.path + File.pathSeparator + "debugged_output.xml")));
 	  
 	  String current_line = br.readLine();
 	  
@@ -773,7 +774,7 @@ List current_text_elements;
 	  	 current_line = br.readLine();
 	  }
       
-      run(this.path + "\\" + "debugged_output.xml");
+      run(this.path + File.pathSeparator + "debugged_output.xml");
       
 	 }
 	 catch(Exception e) {

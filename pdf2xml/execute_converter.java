@@ -22,7 +22,7 @@ private OutputStreamWriter osw;
        File my_file = new File(t);
        my_file.mkdirs();
 	   
-       File my_file2 = new File(t + "\\pdf2xml.dtd");
+       File my_file2 = new File(t, "pdf2xml.dtd");
 	   this.fos = new FileOutputStream(my_file2);
 	   this.osw = new OutputStreamWriter(this.fos);
 	   build_dtd();
@@ -34,7 +34,7 @@ private OutputStreamWriter osw;
 		  
 			if (from.equals("") || to.equals("")) {
 		      	  
-	   	      cmd = "pdftohtml -xml " + s + " " +  t + "\\" + f;
+	   	      cmd = "pdftohtml -xml " + s + " " +  t + File.pathSeparator + f;
 			  System.out.println(cmd);
 	   	      Process p = rt.exec(cmd);	   	    
               p.waitFor();
@@ -43,7 +43,7 @@ private OutputStreamWriter osw;
 		      try {		      	
 		      	int a = Integer.parseInt(from);
 		      	int b = Integer.parseInt(to);
-			    cmd = "pdftohtml -f " + a + " -l " + b + " -xml " + s + " " + t + "\\" + f;	
+			    cmd = "pdftohtml -f " + a + " -l " + b + " -xml " + s + " " + t + File.pathSeparator + f;	
 				System.out.println(cmd);    	
 			    Process p = rt.exec(cmd);
 				p.waitFor();
@@ -54,13 +54,15 @@ private OutputStreamWriter osw;
 		    }		
     
 		first_classification fc = new first_classification(interactive_extraction,t);
-		fc.run(t + "\\" + f + ".xml");	
+		fc.run(t + File.pathSeparator + f + ".xml");	
 
 	    }
 	    catch (IOException ie) {
 	    	System.out.println("Error: " + ie);
 	    }
-      
+		catch (InterruptedException ie2) {
+			System.out.println("The program pdftohtml was interrupted.");
+		}        
 	}
     catch (Exception e) {
        System.out.println("Exception in class: execute_converter and method: constructor. " + e);	    		 	        	
