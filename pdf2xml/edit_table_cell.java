@@ -56,8 +56,8 @@ Table t;
         int column_pos = index % t.columns.size();
         int row_pos = index/t.columns.size();
         
-        Column current_column = (Column) t.columns.elementAt(column_pos);
-        this.my_text = (Text_Element) current_column.cells.elementAt(row_pos);
+        Column current_column = (Column) t.columns.get(column_pos);
+        this.my_text = (Text_Element) current_column.cells.get(row_pos);
  	  	// true stands for header element
      
         this.addWindowListener( 

@@ -7,15 +7,16 @@
 
 package pdf2xml;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Text_Column {
 
-Vector lines;
+List<Line> lines;
 int width;
 
   public Text_Column(int w) {
-    this.lines = new Vector();
+    this.lines = new ArrayList<Line>();
     this.width = w;
   }
 

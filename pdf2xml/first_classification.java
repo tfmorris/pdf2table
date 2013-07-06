@@ -18,11 +18,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -30,11 +30,9 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 
-class top_comparator implements Comparator  {
+class top_comparator implements Comparator<Element>  {
 	  
-	  public int compare(Object o1, Object o2) {
-	    Element e1 = (Element) o1;
-	    Element e2 = (Element) o2;
+	  public int compare(Element e1, Element e2) {
 	    int top1 = Integer.parseInt(e1.getAttribute("top").getValue());            	          	     
 	    int top2 = Integer.parseInt(e2.getAttribute("top").getValue());            	          	     
 	    
@@ -43,39 +41,33 @@ class top_comparator implements Comparator  {
 	  
 }
 
-class top_comparator_for_texts implements Comparator  {
+class top_comparator_for_texts implements Comparator<Text_Element>  {
 	  
-	  public int compare(Object o1, Object o2) {
-	    Text_Element t1 = (Text_Element) o1;
-	    Text_Element t2 = (Text_Element) o2;
-	    
+	  public int compare(Text_Element t1, Text_Element t2) {
 	    return (t1.top - t2.top);
 	  }
 	  
 }
-class left_comparator implements Comparator  {
+
+class left_comparator implements Comparator<Text_Element>  {
 	  
-	  public int compare(Object o1, Object o2) {
-	    Text_Element t1 = (Text_Element) o1;
-	    Text_Element t2 = (Text_Element) o2;
-	    
+	  public int compare(Text_Element t1, Text_Element t2) {
 	    return (t1.left - t2.left);
 	  }
-	  	  
 }
 
 public class first_classification {
 	
-Vector fonts;
-Vector lines;
-Vector font_counter;
-Vector mlbs;
+List<Font> fonts;
+List<Line> lines;
+//List font_counter;
+List<Multiline_Block> mlbs;
 boolean interactive_extraction;
 String path;
 String pdftohtml_file_name = "";
 PrintStream dos;
 int page_text_columns_count;
-Vector text_columns;
+List<Text_Column> text_columns;
 int removed_elements_before;
 int removed_elements_after;
 
@@ -83,18 +75,18 @@ boolean modus;
 
 int distance_sum = 0;
 
-List current_text_elements;
+List<Line> current_text_elements;
 
 	public first_classification(boolean interactivity, String p) {//, int c) {
-        this.fonts = new Vector();
-        this.lines = new Vector();
-        this.font_counter = new Vector();
-        this.mlbs = new Vector();
+        this.fonts = new ArrayList<Font>();
+        this.lines = new ArrayList<Line>();
+//        this.font_counter = new List();
+        this.mlbs = new ArrayList<Multiline_Block>();
         this.interactive_extraction = interactivity;
         this.path = p;
         this.modus = false;
         this.page_text_columns_count = 1;
-        this.text_columns = new Vector();
+        this.text_columns = new ArrayList<Text_Column>();
         this.removed_elements_before = 0;
         this.removed_elements_after = 0;
     }
@@ -107,9 +99,9 @@ List current_text_elements;
     try {
       Document doc = builder.build(file_name);
       Element root = doc.getRootElement();
-      List pages = root.getChildren("page");      
+      List<Element> pages = root.getChildren("page");      
 
-      ListIterator li_pages = pages.listIterator();
+      ListIterator<Element> li_pages = pages.listIterator();
 
       int lines_before = 0;      
     
@@ -128,8 +120,8 @@ List current_text_elements;
            this.text_columns.add(tc);	
         }
         
-      	List current_font_elements = page.getChildren("fontspec");
-      	ListIterator page_fonts = current_font_elements.listIterator();
+      	List<Element> current_font_elements = page.getChildren("fontspec");
+      	ListIterator<Element> page_fonts = current_font_elements.listIterator();
 
       	while(page_fonts.hasNext()) {
       	   Element font = (Element) page_fonts.next();
@@ -138,7 +130,7 @@ List current_text_elements;
       	   String family = font.getAttribute("family").getValue();
       	   String color = font.getAttribute("color").getValue();
            Font f = new Font(page_number,id,size,family,color);
-           this.fonts.addElement(f);
+           this.fonts.add(f);
         } // end of while
       
       	this.current_text_elements  = page.getChildren("text"); 
@@ -158,36 +150,36 @@ List current_text_elements;
            
            if (right_column < this.text_columns.size()) {
            
-           current_tc = (Text_Column) this.text_columns.elementAt(right_column);
+           current_tc = this.text_columns.get(right_column);
            
            if (current_tc.lines.size() > 0) {
-                Line l = (Line) current_tc.lines.lastElement();
+                Line l = (Line) current_tc.lines.get(current_tc.lines.size()-1);
                 
               	if (in_the_line(current_t, l)) {
               	  // exactly in the boundaries of the line
-              	  l.texts.addElement(current_t);
+              	  l.texts.add(current_t);
                   actualize_line_values(current_t,l);
               	}
               	else {    
               	  Line new_line = new Line();              	  
-              	  new_line.texts.addElement(current_t);
+              	  new_line.texts.add(current_t);
                   set_new_line_values(current_t,new_line);                	  
-              	  current_tc.lines.addElement(new_line);
+              	  current_tc.lines.add(new_line);
               	  distance += new_line.first_top - l.last_top;          		                              	  	
               	}
            }
            else {
               	  Line new_line = new Line();
-              	  new_line.texts.addElement(current_t);
+              	  new_line.texts.add(current_t);
                   set_new_line_values(current_t,new_line);              	  	             	              	 
-              	  current_tc.lines.addElement(new_line);
+              	  current_tc.lines.add(new_line);
            } // if current_tc.lines               
            } // if right_column ...
            
         } // for e_array.length
 
         for (int p=0;p<this.text_columns.size();p++) {
-        	Text_Column tc = (Text_Column) this.text_columns.elementAt(p);
+        	Text_Column tc = this.text_columns.get(p);
             this.lines.addAll(tc.lines);                	
         }
         
@@ -199,7 +191,7 @@ List current_text_elements;
         
         for (int o=lines_before;o<this.lines.size();o++) {
         	
-        	Line l = (Line) this.lines.elementAt(o);
+        	Line l = this.lines.get(o);
         	Text_Element[] t_array = new Text_Element[l.texts.size()];
         	l.texts.toArray(t_array);        	 
         	Arrays.sort(t_array, new left_comparator());
@@ -209,13 +201,13 @@ List current_text_elements;
         	int p = 0; 
         	  	  
         	while (p<l.texts.size()-1) {
-        	     Text_Element t = (Text_Element) l.texts.elementAt(p);
-        	     Text_Element n = (Text_Element) l.texts.elementAt(p+1);
+        	     Text_Element t = l.texts.get(p);
+        	     Text_Element n = l.texts.get(p+1);
         	     
         	     int result = belonging_together(t,n);
      
         	     if (result != -1) {
-        	       l.texts.removeElementAt(p+1);
+        	       l.texts.remove(p+1);
         	       if (result == 1) {
         	        if (t.elements.size() == 0) {
         	       	  t.elements.add(t);
@@ -236,7 +228,7 @@ List current_text_elements;
           	  } 
           	  
               for (int h=0;h<l.texts.size();h++) {
-              	Text_Element t = (Text_Element) l.texts.elementAt(h);
+              	Text_Element t = l.texts.get(h);
               	
               	if (t.elements.size() > 0) {
               	  Text_Element[] t_array2 = new Text_Element[t.elements.size()];
@@ -255,7 +247,7 @@ List current_text_elements;
               if (l.texts.size() > 1) {
               	// multi-line
                 if (multi_modus == true) {                	
-                  Multiline_Block current_mlb = (Multiline_Block) this.mlbs.lastElement();
+                  Multiline_Block current_mlb = this.mlbs.get(this.mlbs.size()-1);
                   sum_of_distances += d;
                   actualize_mlb_values(current_mlb, l);                  
                 }
@@ -271,9 +263,9 @@ List current_text_elements;
               	// single-line
                 if (multi_modus == true) {
                 	
-               	  Line pl = (Line) this.lines.elementAt(o-1);
+               	  Line pl = this.lines.get(o-1);
                   sum_of_distances += d;
-        	   	  Text_Element t = (Text_Element) l.texts.elementAt(0);
+        	   	  Text_Element t = l.texts.get(0);
         	   	  int top_distance = l.first_top - pl.bottom;
                   
                   boolean control = false;
@@ -282,7 +274,7 @@ List current_text_elements;
 				  
         	      for (int k=0;k<pl.texts.size();k++) {
         	   	
-        	   	     Text_Element n = (Text_Element) pl.texts.elementAt(k);
+        	   	     Text_Element n = pl.texts.get(k);
         	   	     int left_distance = Math.abs(n.left - t.left);
         	   	     int right_distance = Math.abs((n.left + n.width) - (t.left+t.width));
                   
@@ -292,7 +284,7 @@ List current_text_elements;
         	   	  	 n.value = s;
 
         	   	  	 n.count_lines++;
-        	   	  	 this.lines.removeElementAt(o);
+        	   	  	 this.lines.remove(o);
         	   	  	 o--;
         	   	  	 actualize_text_values(n,t);              	   	  	 
                      actualize_line_values(t,pl);        	   	  	 
@@ -311,7 +303,7 @@ List current_text_elements;
 					 }			 
 					 else {*/
 					 //if (belongs == 0 || count_single_lines > 5) {
-                       Multiline_Block current_mlb = (Multiline_Block) this.mlbs.lastElement();                
+                       Multiline_Block current_mlb = this.mlbs.get(this.mlbs.size());                
                        int mlb_element_count = current_mlb.end - current_mlb.begin;
                        if (mlb_element_count > 0) {
                          current_mlb.avg_distance = sum_of_distances/mlb_element_count;
@@ -340,10 +332,10 @@ List current_text_elements;
 
      second_classification sc = new second_classification(this.interactive_extraction, this.path);
       
-     sc.fonts = (Vector) this.fonts.clone();
-     sc.lines = (Vector) this.lines.clone();
-     sc.font_counter = (Vector) this.font_counter.clone();
-     sc.multiline_blocks = (Vector) this.mlbs.clone();
+     sc.fonts = new ArrayList<Font>(this.fonts);
+     sc.lines = new ArrayList<Line>(this.lines);
+//     sc.font_counter = (List) this.font_counter.clone();
+     sc.multiline_blocks = new ArrayList<Multiline_Block>(this.mlbs);
      sc.run();
     
     }
@@ -416,7 +408,7 @@ List current_text_elements;
    }
    
     public boolean in_the_line(Text_Element t, Line l) {
-      Font f = (Font) this.fonts.elementAt(t.font);
+      Font f = this.fonts.get(t.font);
       
      // int text_bottom = t.top + t.height;
       int text_bottom = t.top + f.size;
@@ -480,7 +472,7 @@ List current_text_elements;
     
 	public void actualize_line_values(Text_Element t,Line l) {			        
 			l.top = Math.min(t.top, l.top);
-			Font f = (Font) this.fonts.elementAt(t.font);
+			Font f = this.fonts.get(t.font);
 			int b = t.top + t.height;
 			l.bottom = Math.max(b, l.bottom);						
 			l.height = l.bottom - l.top;
@@ -501,7 +493,7 @@ List current_text_elements;
         
 	public void set_new_line_values(Text_Element t, Line l) {
 	   l.top = t.top;
-	   Font f = (Font) this.fonts.elementAt(t.font);
+	   Font f = this.fonts.get(t.font);
 	   l.bottom = t.top + t.height;
 	   l.height = l.bottom - l.top;
 	   l.leftmost = t.left;
@@ -550,7 +542,7 @@ List current_text_elements;
 	          int width = Integer.parseInt(text.getAttribute("width").getValue());	          
 	          int height = Integer.parseInt(text.getAttribute("height").getValue());
 	          int font = Integer.parseInt(text.getAttribute("font").getValue());  	          
-	          Font text_f = (Font) this.fonts.elementAt(font);
+	          Font text_f = this.fonts.get(font);
 	          int text_size = text_f.size;
 	          	          
 	          String typ = "number";	          	               
@@ -562,8 +554,8 @@ List current_text_elements;
 	            typ = "text";
               }
             
-              List format_list = text.getChildren("b");
-              List format_list2 = text.getChildren("i");
+              List<Element> format_list = text.getChildren("b");
+              List<Element> format_list2 = text.getChildren("i");
               
               String format = "";
               if (format_list.size() > 0) {
@@ -593,7 +585,7 @@ List current_text_elements;
 	  
 	  for (int i=0;i<this.mlbs.size();i++) {
 	
-	  	Multiline_Block mlb2 = (Multiline_Block) this.mlbs.elementAt(i);
+	  	Multiline_Block mlb2 = this.mlbs.get(i);
 	  	
 	   	mlb2.begin = mlb2.begin - this.removed_elements_before - this.removed_elements_after;
 	   	mlb2.end = mlb2.end - this.removed_elements_before - this.removed_elements_after;
@@ -627,8 +619,8 @@ List current_text_elements;
         }
         else {
           // every other multiline block between the first and the last
-          Multiline_Block mlb1 = (Multiline_Block) this.mlbs.elementAt(i-1);
-          Multiline_Block mlb3 = (Multiline_Block) this.mlbs.elementAt(i+1);
+          Multiline_Block mlb1 = this.mlbs.get(i-1);
+          Multiline_Block mlb3 = this.mlbs.get(i+1);
           
 	  	  steps_forward = mlb3.begin - mlb2.end-1;
 	  	  steps_backward = mlb2.begin - mlb1.end-1;
@@ -649,7 +641,7 @@ List current_text_elements;
 
 	  	  if (mlb2.begin - mlb1.end <= 3 && mlb2.page == mlb1.page && (Math.abs(mlb2.max_elements - mlb1.max_elements) <=1))  {
 	  	  	 mlb1.end = mlb2.end - (this.removed_elements_before - before);
-	  	  	 this.mlbs.removeElementAt(i);	  	  	 
+	  	  	 this.mlbs.remove(i);	  	  	 
 	  	  	 merge_with_before = true;
 	  	  	 actualize_mlb_values2(mlb1,mlb2);	  	  	 
 	  	  	 i--;
@@ -659,12 +651,12 @@ List current_text_elements;
 	  	  	   mlb2.begin = mlb2.begin - (this.removed_elements_before - before);	
 	  	  	   mlb2.end = mlb3.end - (this.removed_elements_before - before) - (this.removed_elements_after - after);
 	  	  	   actualize_mlb_values2(mlb2,mlb3);
-	  	  	   this.mlbs.removeElementAt(i+1);	  	  	   	  	  	 
+	  	  	   this.mlbs.remove(i+1);	  	  	   	  	  	 
 	  	  	 }
 	  	  	 else {
 	  	  	   mlb1.end = mlb3.end - (this.removed_elements_before - before) - (this.removed_elements_after - after);	  	  	 	  	  	   
 	  	  	   actualize_mlb_values2(mlb1,mlb3);
-	  	  	   this.mlbs.removeElementAt(i+1);	  	  	  
+	  	  	   this.mlbs.remove(i+1);	  	  	  
 	  	  	 } 
 	  	  }
           			
@@ -676,24 +668,24 @@ List current_text_elements;
 	}
 	
     public void line_merge(int pos, int steps_back, int steps_for) {
-    	Multiline_Block mlb = (Multiline_Block) this.mlbs.elementAt(pos);
-        Line first_line = (Line) this.lines.elementAt(mlb.begin);   
-        Line last_line = (Line) this.lines.elementAt(mlb.end);    	
+    	Multiline_Block mlb = this.mlbs.get(pos);
+        Line first_line = this.lines.get(mlb.begin);   
+        Line last_line = this.lines.get(mlb.end);    	
     	int count = 0;
     	boolean merge_control = true;
     	
         for (int i=1; i<=steps_back && merge_control == true;i++) {
-        	Line pl = (Line) this.lines.elementAt(mlb.begin - i);
-        	Vector storage = (Vector) first_line.texts.clone();
+        	Line pl = this.lines.get(mlb.begin - i);
+        	List<Text_Element> storage = new ArrayList<Text_Element>(first_line.texts);
         	
         	int top_distance = first_line.first_top - pl.bottom;
         	
         	for (int j=0;j<first_line.texts.size();j++) {
-        	   Text_Element t = (Text_Element) storage.elementAt(j);
+        	   Text_Element t = storage.get(j);
         	   
         	   for (int k=0;k<pl.texts.size();k++) {
         	   	
-        	   	  Text_Element n = (Text_Element) pl.texts.elementAt(k);
+        	   	  Text_Element n = pl.texts.get(k);
         	   	  int left_distance = Math.abs(n.left - t.left);
         	   	  int right_distance = Math.abs((n.left + n.width) - (t.left+t.width));
         	   	  if (top_distance < t.height/2 && t.typ.equals(n.typ) && t.typ.equals("text") && ((left_distance < 3) || (right_distance < 3))) {
@@ -706,13 +698,14 @@ List current_text_elements;
         	   }	
         	}
         	   if (count == pl.texts.size()) {
-        	   	  first_line.texts = (Vector) storage.clone();
+        	   	  List<Text_Element> clone = new ArrayList<Text_Element>(storage);
+				first_line.texts = clone;
         	   	  for (int p=0;p<first_line.texts.size();p++) {
-                    Text_Element t = (Text_Element) first_line.texts.elementAt(p);
+                    Text_Element t = first_line.texts.get(p);
                     actualize_line_values(t,first_line);
                   }
         	   	  
-        	   	  this.lines.removeElementAt(mlb.begin - i);
+        	   	  this.lines.remove(mlb.begin - i);
         	   	  this.removed_elements_before++;
         	   }
         	   else {
@@ -724,15 +717,15 @@ List current_text_elements;
         merge_control = true;
         
         for (int i=1;i<=steps_for && merge_control == true;i++) {
-        	Line nl = (Line) this.lines.elementAt(mlb.end + i);
-        	Vector storage = (Vector) last_line.texts.clone();
+        	Line nl = this.lines.get(mlb.end + i);
+        	List<Text_Element> storage = new ArrayList<Text_Element>(last_line.texts);
         	
         	int top_distance = nl.first_top - last_line.bottom;
         	
         	for (int j=0;j<last_line.texts.size();j++) {
-        	   Text_Element t = (Text_Element) last_line.texts.elementAt(j);
+        	   Text_Element t = last_line.texts.get(j);
         	   for (int k=0;k<nl.texts.size();k++) {
-        	   	  Text_Element n = (Text_Element) nl.texts.elementAt(k);
+        	   	  Text_Element n = nl.texts.get(k);
         	   	  int left_distance = Math.abs(n.left - t.left);
         	   	  int right_distance = Math.abs((n.left + n.width) - (t.left+t.width));
         	   	  
@@ -747,12 +740,12 @@ List current_text_elements;
         	   }	
         	}       
         	   if (count == nl.texts.size()) {
-        	   	  last_line.texts = (Vector) storage.clone(); 
+        	   	  last_line.texts = new ArrayList<Text_Element>(storage); 
         	   	  for (int p=0;p<last_line.texts.size();p++) {
-                    Text_Element t = (Text_Element) last_line.texts.elementAt(p);
+                    Text_Element t = last_line.texts.get(p);
                     actualize_line_values(t,last_line);
                   }
-        	   	  this.lines.removeElementAt(mlb.end+i);
+        	   	  this.lines.remove(mlb.end+i);
         	   	  this.removed_elements_after++;     	   	          	   	  
         	   }
         	   else {

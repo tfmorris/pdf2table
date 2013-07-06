@@ -25,27 +25,26 @@
 package pdf2xml;
 
 import java.io.PrintStream;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class second_classification {
 	PrintStream dos;
 	PrintStream dos2;
-	Vector fonts;
-	Vector font_counter;
-	Vector lines;
-	Vector multiline_blocks;	
-	Vector tables;
+	List<Font> fonts;
+	List<Line> lines;
+	List<Multiline_Block> multiline_blocks;	
+	List<Table> tables;
 	boolean interactive_extraction;
     String path;
     
 	public second_classification(boolean interactivity,String p) {
         this.path = p;
      
-	    this.fonts = new Vector();
-		this.font_counter = new Vector();
-		this.lines = new Vector();
-		this.multiline_blocks = new Vector();
-		this.tables = new Vector();
+	    this.fonts = new ArrayList<Font>();
+		this.lines = new ArrayList<Line>();
+		this.multiline_blocks = new ArrayList<Multiline_Block>();
+		this.tables = new ArrayList<Table>();
 		this.interactive_extraction = interactivity;
 	}	
 	
@@ -70,7 +69,7 @@ public class second_classification {
     public void decompose_tables() {
    	
    	  for (int i=0;i<this.multiline_blocks.size();i++) {
-   	  	 Multiline_Block mlb = (Multiline_Block) this.multiline_blocks.elementAt(i);   	  	 
+   	  	 Multiline_Block mlb = (Multiline_Block) this.multiline_blocks.get(i);   	  	 
    	  	 int lines_before = 0;   	  	   
    	  	 int line_count = 0;
    	  	 
@@ -82,10 +81,10 @@ public class second_classification {
 		   MyNode root = new MyNode("root",-1);
 		   
 		   while (b<=mlb.end) {
-   	  	     Line l = (Line) this.lines.elementAt(b);   	  	        	  	     
+   	  	     Line l = this.lines.get(b);   	  	        	  	     
 			 
  	   	   	 for (int j=0;j<l.texts.size();j++) {
- 	   	  	 	Text_Element t = (Text_Element) l.texts.elementAt(j);
+ 	   	  	 	Text_Element t = (Text_Element) l.texts.get(j);
 				if (t.artificial) {
 				}
  	   	  	    insert_into_tree(t,root,lines_before);
@@ -108,8 +107,8 @@ public class second_classification {
 
 		   
 		  for (int k=0; k< new_table.columns.size() -1; k++) {
-		      Column c1 = (Column) new_table.columns.elementAt(k);
-			  Column c2 = (Column) new_table.columns.elementAt(k+1);
+		      Column c1 = new_table.columns.get(k);
+			  Column c2 = new_table.columns.get(k+1);
 			  
 		    Column nc = (Column) c1.clone();
 			  if (c1.left <= c2.left && c1.right >= c2.left) {
@@ -117,9 +116,9 @@ public class second_classification {
 				boolean merge = true;
 				for (int j=0; j<c1.cells.size();j++) {
 			
-				  Text_Element t1 = (Text_Element) c1.cells.elementAt(j);
-				  Text_Element t2 = (Text_Element) c2.cells.elementAt(j);
-				  Text_Element nt = (Text_Element) nc.cells.elementAt(j);
+				  Text_Element t1 = (Text_Element) c1.cells.get(j);
+				  Text_Element t2 = (Text_Element) c2.cells.get(j);
+				  Text_Element nt = (Text_Element) nc.cells.get(j);
 			
 					
 				  if (t1.value.equals("null") || t2.value.equals("null") ) {	
@@ -152,9 +151,9 @@ public class second_classification {
 				
 				
 				if (merge == true) {
-				 new_table.columns.insertElementAt(nc, k);
-				 new_table.columns.removeElementAt(k+1);
-				 new_table.columns.removeElementAt(k+1);
+				 new_table.columns.add(k, nc);
+				 new_table.columns.remove(k+1);
+				 new_table.columns.remove(k+1);
 				}
 			  }
 		   }
@@ -164,13 +163,13 @@ public class second_classification {
 		   boolean header = true;
 		   int sum = 0;
 		   if (new_table.columns.size() > 0) {
-		     Column c1 = (Column) new_table.columns.elementAt(0);
+		     Column c1 = new_table.columns.get(0);
 			 int k=0;
 			 
 			while (header == true &&  k < c1.cells.size()) {
 			   for (int m=0; m < new_table.columns.size(); m++) {
-			     Column current_c = (Column) new_table.columns.elementAt(m);
-			     Text_Element t = (Text_Element) current_c.cells.elementAt(k);
+			     Column current_c = new_table.columns.get(m);
+			     Text_Element t = (Text_Element) current_c.cells.get(k);
 
 				 if (t.artificial == false ) {
 				   sum = sum + t.colspan;
@@ -202,7 +201,7 @@ public class second_classification {
    
 	    if (n.content.equals("null")) {
 		
-		  if (insert_into_tree(t,(MyNode) n.nodes.elementAt(0),l))  {
+		  if (insert_into_tree(t,(MyNode) n.nodes.get(0),l))  {
 		    return true;
 		  }
 		}
@@ -212,7 +211,7 @@ public class second_classification {
 	
 			for (int i=0;i<n.nodes.size();i++) {
 			
-			  MyNode next = (MyNode) n.nodes.elementAt(i);
+			  MyNode next = (MyNode) n.nodes.get(i);
 			  // it was t.left > next.right. which means completely on the right side
 			  if (t.left > next.left) { pos++; }
 			  	
@@ -226,12 +225,12 @@ public class second_classification {
 
 			for (int j=n.level; j < l-1; j++) {
 			  MyNode dummy = new MyNode("null", t, j+1);
-			  n.nodes.insertElementAt(dummy,pos);
+			  n.nodes.add(pos, dummy);
 			  n = dummy;
 			  pos = 0;
 			} 
 			MyNode current = new MyNode(t,l);
-			n.nodes.insertElementAt(current,pos);
+			n.nodes.add(pos,current);
 			return true;
 			
 		  }
@@ -247,12 +246,12 @@ public class second_classification {
 
 	for (int i=0;i<n.nodes.size();i++) {
 	   
-	   print_tree((MyNode) n.nodes.elementAt(i));
+	   print_tree((MyNode) n.nodes.get(i));
 	
 	}
    }
    
-   public int convert_to_table(MyNode n, Column c, Vector v, int l) {
+   public int convert_to_table(MyNode n, Column c, List<Column> v, int l) {
 
      if (c == null) {
 	 // root node
@@ -260,7 +259,7 @@ public class second_classification {
 	    for (int i=0; i < n.nodes.size(); i++) {
 		  Column new_column = new Column();
 		  v.add(new_column);
-		  spanning += convert_to_table((MyNode) n.nodes.elementAt(i), new_column, v, l);
+		  spanning += convert_to_table((MyNode) n.nodes.get(i), new_column, v, l);
 		}
 		return spanning;
 	 }
@@ -268,7 +267,7 @@ public class second_classification {
 	 // not root node
 	    int pos = 0;
 	    if (!n.content.equals("null")) {
-	      c.cells.addElement(n.text_element);		
+	      c.cells.add(n.text_element);		
 		  pos = c.cells.size();
 		  if (n.text_element.colspan == 1) {
 		      actualize_column_values(c, n.text_element);
@@ -276,7 +275,7 @@ public class second_classification {
 		}
 		else {
 		  Text_Element t = new Text_Element();
-		  c.cells.addElement(t);
+		  c.cells.add(t);
 		  pos = c.cells.size();
 		}
 
@@ -284,16 +283,16 @@ public class second_classification {
 		  Column store = (Column) c.clone();
 		  int spanning = 0;
 		  
-		  spanning += convert_to_table((MyNode) n.nodes.elementAt(0), c, v, l);
+		  spanning += convert_to_table((MyNode) n.nodes.get(0), c, v, l);
 
 		  for (int i=1; i < n.nodes.size(); i++) {
 		    Column new_column = new Column();
 			new_column.cells.addAll(store.cells);
 			v.add(new_column);
-			spanning += convert_to_table((MyNode) n.nodes.elementAt(i), new_column, v, l);
+			spanning += convert_to_table((MyNode) n.nodes.get(i), new_column, v, l);
 		  }
 		  
-		  Text_Element t = (Text_Element) c.cells.elementAt(pos-1);
+		  Text_Element t = (Text_Element) c.cells.get(pos-1);
 		  t.colspan = spanning;
 		  
 		  return spanning;

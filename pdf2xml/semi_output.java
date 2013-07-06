@@ -20,19 +20,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class semi_output extends Frame{
 
-public Vector text_areas;
-public Vector checkboxes = new Vector();
+public List<TextArea> text_areas;
+public List<Checkbox> checkboxes = new ArrayList<Checkbox>();
 TextArea title_field;
-public Vector tables;
-Vector h;
-Vector dr;
-Vector header_elements;
-Vector data_cells;
-Vector lowest_level;
+public List<Table> tables;
 
 java.awt.Font f1;
 java.awt.Font f2;
@@ -45,7 +41,7 @@ ScrollPane sc;
 
 public int counter;
 Choice ch;
-public Vector fonts;
+public List<Font> fonts;
 
 
 boolean add_new_column;
@@ -55,7 +51,7 @@ int column_position;
 String path;
 Table undo_table;
 
-    public semi_output(Vector t, Vector f, String p) {
+    public semi_output(List<Table> tables2, List<Font> fonts2, String p) {
       super("Table Verification");
       try {
      
@@ -70,7 +66,7 @@ Table undo_table;
         this.delete_column = false;
         int column_position = -1;
 
-        this.fonts = f;
+        this.fonts = fonts2;
         this.counter = 0;
 
         this.f1 = new java.awt.Font("SansSerif",java.awt.Font.PLAIN,11);
@@ -195,7 +191,7 @@ Table undo_table;
 		main_panel.add(this.sc);
         this.add(main_panel);
    	    
-   	    this.tables = t;
+   	    this.tables = tables2;
   	    next();
 
   	    }
@@ -207,12 +203,12 @@ Table undo_table;
     public void cancel_exit_clicked() {
       try {
         if (this.counter >= 1 && this.counter <= this.tables.size()) {
-            Table prev = (Table) this.tables.elementAt(this.counter-1);
+            Table prev = this.tables.get(this.counter-1);
             prev.title = title_field.getText();
             
             int i = 1;
             while (i < this.checkboxes.size()) {
-             Checkbox c = (Checkbox) this.checkboxes.elementAt(i);
+             Checkbox c = this.checkboxes.get(i);
              if (c.getState() == false) {
                break;
              }
@@ -236,12 +232,12 @@ Table undo_table;
     try {
     	
         if (this.counter >= 1 && this.counter <= this.tables.size()) {
-            Table prev = (Table) this.tables.elementAt(this.counter-1);
+            Table prev = this.tables.get(this.counter-1);
             prev.title = title_field.getText();
             
             int i = 1;
             while (i < this.checkboxes.size()) {
-             Checkbox c = (Checkbox) this.checkboxes.elementAt(i);
+             Checkbox c = this.checkboxes.get(i);
              if (c.getState() == false) {
                break;
              }
@@ -253,7 +249,7 @@ Table undo_table;
             this.checkboxes.clear();         
         }    	
         if (this.counter < this.tables.size()) {
-           Table current_table = (Table) this.tables.elementAt(this.counter);                                                   
+           Table current_table = this.tables.get(this.counter);                                                   
            draw_table(current_table);
            this.counter++;
 
@@ -274,7 +270,7 @@ Table undo_table;
     
       try {
     	if (this.counter >0 && this.counter<=this.tables.size()) {
-    	  this.tables.removeElementAt(this.counter-1);
+    	  this.tables.remove(this.counter-1);
     	  this.counter--;
     	  next();
     	}
@@ -289,17 +285,17 @@ Table undo_table;
     	
       try {
       if (this.counter >= 2) {
-	      Table now = (Table) this.tables.elementAt(this.counter-1);
-	      Table previous = (Table) this.tables.elementAt(this.counter-2);
+	      Table now = this.tables.get(this.counter-1);
+	      Table previous = this.tables.get(this.counter-2);
           
           int count_of_columns = Math.min(now.columns.size(),previous.columns.size());
           System.out.println(count_of_columns);
           for (int i=0;i<count_of_columns;i++) {
-          	Column previous_column = (Column) previous.columns.elementAt(i);
-          	Column now_column = (Column) now.columns.elementAt(i);
+          	Column previous_column = (Column) previous.columns.get(i);
+          	Column now_column = (Column) now.columns.get(i);
           	previous_column.cells.addAll(now_column.cells);         
           }
-	      this.tables.removeElementAt(this.counter-1);
+	      this.tables.remove(this.counter-1);
 	      this.counter = this.counter-2;
 	      next();
       }
@@ -315,8 +311,8 @@ Table undo_table;
 	 this.table_panel.removeAll();
 
      try {
-     	this.text_areas = new Vector();
-     	this.checkboxes = new Vector();
+     	this.text_areas = new ArrayList<TextArea>();
+     	this.checkboxes = new ArrayList<Checkbox>();
  
 		Color panel_background_color = new Color(217,217,217);
 
@@ -334,7 +330,7 @@ Table undo_table;
         int column_width = 0;
 
         for (int l=1;l<=t.columns.size();l++) {
-          Column current_column = (Column) t.columns.elementAt(l-1);         
+          Column current_column = (Column) t.columns.get(l-1);         
           column_width = current_column.right - current_column.left;          
            if (column_width < 20) {
            	 column_width = 20;
@@ -345,7 +341,7 @@ Table undo_table;
           labels_start = labels_start + column_width + 10;
         }
        
-       Column first_column = (Column) t.columns.elementAt(0);
+       Column first_column = (Column) t.columns.get(0);
        int label_top = 140;
        int label_left = 70;
        int max_height = 0;
@@ -362,13 +358,13 @@ Table undo_table;
          max_height = 0;
          for (int m=0;m<t.columns.size();m++) {
 
-           Column current_column = (Column) t.columns.elementAt(m);
+           Column current_column = (Column) t.columns.get(m);
            column_width = current_column.right - current_column.left;
            if (column_width < 20) {
            	 column_width = 20;
            }           
-           Vector current_texts = (Vector) current_column.cells.clone();
-           Text_Element current_t = (Text_Element) current_texts.elementAt(k-1);
+           List<Text_Element> current_texts = new ArrayList<Text_Element>(current_column.cells);
+           Text_Element current_t = (Text_Element) current_texts.get(k-1);
            if (m==0) {
            	  if (k-1 < t.datarow_begin) {
            	  	 checkbox.setState(true);
@@ -386,7 +382,7 @@ Table undo_table;
            if (current_t.colspan > 1) {
            	 for (int n=1;n<current_t.colspan;n++) {    
            	  if (m+n < t.columns.size()) {       	   	
-             Column next_column = (Column) t.columns.elementAt(m+n);	
+             Column next_column = (Column) t.columns.get(m+n);	
              column_width = 10 + column_width + (next_column.right - next_column.left);
              text_areas.add(null);
               }
@@ -437,7 +433,7 @@ Table undo_table;
 
     public void edit(int index) {
       try {    
-      Table current_table = (Table) this.tables.elementAt(this.counter-1);
+      Table current_table = this.tables.get(this.counter-1);
       this.undo_table = (Table) current_table.clone();
 
        final edit_table_cell etc = new edit_table_cell(current_table, index);
@@ -460,7 +456,7 @@ Table undo_table;
 
      public void edit_table_clicked() {      
       try {
-      Table current_table = (Table) this.tables.elementAt(this.counter-1);
+      Table current_table = this.tables.get(this.counter-1);
       this.undo_table = (Table) current_table.clone();
 
       final edit_table_content etc = new edit_table_content(current_table);
@@ -484,7 +480,7 @@ Table undo_table;
      }
 
      public void change_table(Table t) {
-	   Table current_table = (Table) this.tables.elementAt(this.counter);
+	   Table current_table = this.tables.get(this.counter);
        current_table = (Table) t.clone();	   	
      }
         
@@ -492,7 +488,7 @@ Table undo_table;
      public void merge_cells(int index,boolean s,boolean l,boolean r,boolean u,boolean d) {
 	 counter--;
 	 try {
-	  Table current_table = (Table) this.tables.elementAt(this.counter);
+	  Table current_table = this.tables.get(this.counter);
       this.undo_table = (Table) current_table.clone();
       
       int position = index;
@@ -503,35 +499,35 @@ Table undo_table;
       	 // do nothing
       }
       else if (l==true) {
-      	Column c = (Column) current_table.columns.elementAt(cell_pos);
-        Text_Element current_t = (Text_Element) c.cells.elementAt(line_pos);
+      	Column c = (Column) current_table.columns.get(cell_pos);
+        Text_Element current_t = (Text_Element) c.cells.get(line_pos);
         if (cell_pos > 0) {
           // element left exists
-      	  Column c2 = (Column) current_table.columns.elementAt(cell_pos-1);          
-          Text_Element left = (Text_Element) c2.cells.elementAt(line_pos);
+      	  Column c2 = (Column) current_table.columns.get(cell_pos-1);          
+          Text_Element left = (Text_Element) c2.cells.get(line_pos);
           left.value = left.value + " " + current_t.value;
           left.width += current_t.width;
           left.colspan++;
         }
       }
       else if (r==true) {
-      	Column c = (Column) current_table.columns.elementAt(cell_pos);
-        Text_Element current_t = (Text_Element) c.cells.elementAt(line_pos);
+      	Column c = (Column) current_table.columns.get(cell_pos);
+        Text_Element current_t = (Text_Element) c.cells.get(line_pos);
         if (cell_pos < current_table.columns.size()-1) {
           // element right exists
-       	  Column c2 = (Column) current_table.columns.elementAt(cell_pos+1);          
-          Text_Element right = (Text_Element) c2.cells.elementAt(line_pos);
+       	  Column c2 = (Column) current_table.columns.get(cell_pos+1);          
+          Text_Element right = (Text_Element) c2.cells.get(line_pos);
           current_t.value = current_t.value + " " + right.value;
           current_t.width += right.width;
           current_t.colspan++;
         }
       }
       else if (u==true) {
-      	Column c = (Column) current_table.columns.elementAt(cell_pos);
-        Text_Element current_t = (Text_Element) c.cells.elementAt(line_pos);
+      	Column c = (Column) current_table.columns.get(cell_pos);
+        Text_Element current_t = (Text_Element) c.cells.get(line_pos);
         if (line_pos > 0) {
           // element above exits        
-          Text_Element above = (Text_Element) c.cells.elementAt(line_pos-1);
+          Text_Element above = (Text_Element) c.cells.get(line_pos-1);
           above.value = above.value + "\n" + current_t.value;
           above.count_lines = above.count_lines + current_t.count_lines;
           current_t.count_lines = 1;
@@ -539,11 +535,11 @@ Table undo_table;
         }
       }
       else if (d==true) {
-      	Column c = (Column) current_table.columns.elementAt(cell_pos);
-        Text_Element current_t = (Text_Element) c.cells.elementAt(line_pos);
+      	Column c = (Column) current_table.columns.get(cell_pos);
+        Text_Element current_t = (Text_Element) c.cells.get(line_pos);
         if (line_pos < c.cells.size()-1) {
           // element below exists
-          Text_Element under = (Text_Element) c.cells.elementAt(line_pos+1);
+          Text_Element under = (Text_Element) c.cells.get(line_pos+1);
           current_t.value = current_t.value + "\n" + under.value;
           current_t.count_lines += under.count_lines;
           under.count_lines = 1;

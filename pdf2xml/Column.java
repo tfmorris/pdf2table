@@ -11,18 +11,19 @@
 
 package pdf2xml;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Column {
 
-  Vector cells;
+  List<Text_Element> cells;
   int left;
   int right;
   int empty_cells;
   int header;
     
   public Column(int l, int r) {
-    this.cells = new Vector();	 
+    this.cells = new ArrayList<Text_Element>();	 
     this.left = l;
     this.right = r;
     this.empty_cells = 0;
@@ -30,7 +31,7 @@ public class Column {
   }
   
   public Column() {
-  	this.cells = new Vector();
+  	this.cells = new ArrayList<Text_Element>();
   	this.left = -1;
   	this.right = -1;
   	this.empty_cells = 0;

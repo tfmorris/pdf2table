@@ -7,23 +7,24 @@
 
 package pdf2xml;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Table {
 
 
- Vector columns;
+ List<Column> columns;
  int page;
  int datarow_begin;
  String title = "";
  
  public Table() {
-   this.columns = new Vector();
+   this.columns = new ArrayList<Column>();
  } 	
  
  public Object clone() {
    Table t = new Table();
-   t.columns = (Vector) this.columns.clone();
+   t.columns = new ArrayList<Column>(this.columns);
    t.page = this.page;
    t.datarow_begin = this.datarow_begin;	
    return t;

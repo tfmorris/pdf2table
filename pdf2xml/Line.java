@@ -7,11 +7,12 @@
 
 package pdf2xml;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Line {
 
-  Vector texts;
+  List<Text_Element> texts;
   
   int top;
   int bottom;
@@ -25,6 +26,6 @@ public class Line {
   String typ;
   
   public Line() {
-    this.texts = new Vector();	            
+    this.texts = new ArrayList<Text_Element>();	            
   }
 }

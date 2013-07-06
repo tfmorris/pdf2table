@@ -7,23 +7,27 @@
 
 package pdf2xml;
 
-import java.util.*;
-import java.io.*;
-import java.awt.*;
+import java.awt.Frame;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class xml_output extends Frame{
 PrintStream dos;
-Vector tables;
-Vector fonts;
+List<Table> tables;
+List<Font> fonts;
 String path;
 PrintStream dos2;
 PrintStream dos3;
    	
-   public xml_output(Vector table_vector, Vector font_vector,String p) {
+   public xml_output(List<Table> table_List, List<Font> font_List,String p) {
    	try {
    	  this.path = p;
-   	  this.tables = (Vector) table_vector.clone();
-   	  this.fonts = (Vector) font_vector.clone();
+   	  this.tables = new ArrayList<Table>(table_List);
+   	  this.fonts = new ArrayList<Font>(font_List);
   
 	  
    	  create_stylesheet();
@@ -169,7 +173,7 @@ PrintStream dos3;
        dos.println("<tables>");
        
        for (int km=0;km<this.fonts.size();km++) {
-       	  Font f = (Font) this.fonts.elementAt(km);
+       	  Font f = (Font) this.fonts.get(km);
        	  dos.println("<fontspec id=\"" + f.id + 
        	     "\" size=\"" + f.size + "\" family=\"" + 
 			 f.family + "\" color=\"" + f.color + "\"/>");       	
@@ -178,7 +182,7 @@ PrintStream dos3;
            
        for (int i=0;i < this.tables.size();i++) {
        	 		
-       	 Table c_table = (Table) this.tables.elementAt(i);
+       	 Table c_table = (Table) this.tables.get(i);
 		 int cells_on_column = 0;
 		 	
          dos.println("<table>");
@@ -194,10 +198,10 @@ PrintStream dos3;
 		    int p = 0;
 			dos.println("<header_line>");
 			while (p < c_table.columns.size()) {
-			   Column cc1 = (Column) c_table.columns.elementAt(p);
+			   Column cc1 = (Column) c_table.columns.get(p);
 			   cells_on_column = cc1.cells.size();
 			   cc1.header = p+j;
-			   Text_Element t1 = (Text_Element) cc1.cells.elementAt(j);
+			   Text_Element t1 = (Text_Element) cc1.cells.get(j);
 			   dos.println("<header_element id=\"" + (p+j) + "\" sh=\"" + cc1.header); 
 			   dos.println("\" font=\"" + t1.font + "\" colspan=\"" + t1.colspan + "\">");
        	 	   dos.println("<![CDATA[");
@@ -217,8 +221,8 @@ PrintStream dos3;
 		  dos.println("<data_row>"); 	           
           int k = 0;
           while (k < c_table.columns.size()) {
-               Column cc = (Column) c_table.columns.elementAt(k);      
-			   Text_Element t = (Text_Element) cc.cells.elementAt(j);
+               Column cc = (Column) c_table.columns.get(k);      
+			   Text_Element t = (Text_Element) cc.cells.get(j);
         	   dos.print("<cell sh=\"" + cc.header + "\" font=\"" + t.font);                                     	      	 	       
        	 	   dos.println("\" colspan=\"" + t.colspan + "\" format=\"" + t.format + "\">");  
        	 	   dos.println("<![CDATA[");

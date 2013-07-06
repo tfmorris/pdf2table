@@ -7,7 +7,8 @@
 
 package pdf2xml;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Text_Element {
 	
@@ -21,7 +22,7 @@ int font;
 String format = "";
 String typ;
 int count_lines;
-Vector elements;
+List<Text_Element> elements;
 int last_top; 
 int first_top; 
 int colspan = 1;
@@ -41,7 +42,7 @@ boolean artificial;
     this.first_top = t;
     this.colspan = 1;
     this.count_lines = 1;
-    this.elements = new Vector();
+    this.elements = new ArrayList<Text_Element>();
     this.right = this.left + this.width;
     this.artificial = false;
   }	

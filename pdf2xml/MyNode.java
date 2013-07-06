@@ -7,7 +7,8 @@
 
 package pdf2xml;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyNode {
 
@@ -15,14 +16,14 @@ int left;
 int right;
 int level;
 String content;
-Vector nodes;
+List<MyNode> nodes;
 Text_Element text_element;
 
   public MyNode(String c, int l) {
     // used only for the construction of the root element in second_classification.java
     this.content = c;
 	this.level = l;
-	this.nodes = new Vector();
+	this.nodes = new ArrayList<MyNode>();
   }
   
   public MyNode(Text_Element t , int l) {
@@ -31,7 +32,7 @@ Text_Element text_element;
 	this.left = t.left;
 	this.right = t.right;
 	this.level = l;
-	this.nodes = new Vector();
+	this.nodes = new ArrayList<MyNode>();
   }
   
   public MyNode(String c, Text_Element t , int l) {
@@ -39,7 +40,7 @@ Text_Element text_element;
 	this.left = t.left;
 	this.right = t.right;
 	this.level = l;
-	this.nodes = new Vector();
+	this.nodes = new ArrayList<MyNode>();
   }
   
 }
