@@ -444,7 +444,7 @@ Table undo_table;
              }
            }
          );
-       etc.show();
+       etc.setVisible(true);
  	 
     }
     catch (Exception e) {
@@ -460,7 +460,7 @@ Table undo_table;
       this.undo_table = (Table) current_table.clone();
 
       final edit_table_content etc = new edit_table_content(current_table);
-      etc.show();
+      etc.setVisible(true);
       etc.addWindowListener(
            new WindowAdapter() {
              public void windowClosed( WindowEvent e ) {

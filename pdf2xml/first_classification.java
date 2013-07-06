@@ -378,7 +378,7 @@ List<Line> current_text_elements;
      	 d.add(b);     	 	
      	 d.add(b2);
          d.setLocationRelativeTo(null);       	  
-   	  	 d.show();
+   	  	 d.setVisible(true);
       
     }  
     catch (IOException e) { 

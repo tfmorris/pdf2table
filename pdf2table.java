@@ -18,7 +18,7 @@ public class pdf2table {
 	try {
 	  if (args.length == 0) {
 	   userinterface uid = new userinterface();
-       uid.show();
+       uid.setVisible(true);
       }
 	  else if (args.length == 2) {
 	

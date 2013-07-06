@@ -161,7 +161,7 @@ private String f_name;
       try {
       FileDialog file_dialog = new FileDialog(f0,"Source File");
       file_dialog.setDirectory("C:");
-      file_dialog.show();
+      file_dialog.setVisible(true);
       String file_name = file_dialog.getFile();
       String file_directory = file_dialog.getDirectory();
       String target_file;
@@ -186,7 +186,7 @@ private String f_name;
      	d.setSize(200,100);     	
      	d.add("South",b);
      	d.setLocationRelativeTo(null);
-     	d.show();
+     	d.setVisible(true);
      }
       
      }
@@ -203,7 +203,7 @@ private String f_name;
       Frame f0 = new Frame();
       FileDialog file_dialog = new FileDialog(f0,"Target Directory");
       file_dialog.setDirectory("C:");
-      file_dialog.show();
+      file_dialog.setVisible(true);
       String file_directory = file_dialog.getDirectory();
       this.tf2.setText(file_directory);
     }
@@ -237,7 +237,7 @@ private String f_name;
           d.setSize(250,100);     	
      	  d.add("South",b);
      	  d.setLocationRelativeTo(null);
-     	  d.show();        	
+     	  d.setVisible(true);        	
         }
         else {
         	

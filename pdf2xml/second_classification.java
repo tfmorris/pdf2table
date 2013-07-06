@@ -54,7 +54,7 @@ public class second_classification {
        
        if (this.interactive_extraction == true) {
           semi_output so = new semi_output(this.tables, this.fonts, this.path);
-          so.show();
+          so.setVisible(true);
        }
        else {
           xml_output xml_o = new xml_output(this.tables, this.fonts, this.path);      
