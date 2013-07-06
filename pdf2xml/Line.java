@@ -28,4 +28,29 @@ public class Line {
   public Line() {
     this.texts = new ArrayList<Text_Element>();	            
   }
+
+    public void init(Text_Element t) {
+        top = t.top;
+        bottom = t.top + t.height;
+        height = bottom - top;
+        leftmost = t.left;
+        rightmost = t.left + t.width;
+        font = t.font;
+        last_top = t.top;
+        first_top = t.top;
+        used_space = t.width * t.height;
+    }
+
+    void add(Text_Element t) {
+        top = Math.min(t.top, top);
+        int b = t.top + t.height;
+        bottom = Math.max(b, bottom);
+        height = bottom - top;
+        leftmost = Math.min(t.left, leftmost);
+        rightmost = Math.max(rightmost, t.left + t.width);
+        font = t.font;
+        last_top = Math.max(t.top, last_top);
+        first_top = Math.min(t.top, first_top);
+        used_space += t.width * t.height;
+    }
 }

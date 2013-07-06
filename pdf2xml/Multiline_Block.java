@@ -9,28 +9,66 @@ package pdf2xml;
 
 
 public class Multiline_Block {
-	
-int begin;
-int end;
 
-int leftmost;
-int rightmost;
-int max_elements;
-int avg_distance;
-int page;
-int used_space = 0;
+    int begin;
+    int end;
 
-  public Multiline_Block() {
-  
-  }
-  
-  public Multiline_Block(int b, int e, int l,int r,int me,int ad,int p) {
-  	this.begin = b;
-  	this.end = e;
-  	this.leftmost = l;
-  	this.rightmost = r;
-  	this.max_elements = me;
-  	this.avg_distance = ad;
-  	this.page = p;
-  }	
+    int leftmost;
+    int rightmost;
+    int max_elements;
+    int avg_distance;
+    int page;
+    int used_space = 0;
+
+    public Multiline_Block() {
+    }
+
+    public Multiline_Block(int b, int e, int l, int r, int me, int ad, int p) {
+        this.begin = b;
+        this.end = e;
+        this.leftmost = l;
+        this.rightmost = r;
+        this.max_elements = me;
+        this.avg_distance = ad;
+        this.page = p;
+    }
+
+    /**
+     * Update mlb values after adding a new line .
+     * 
+     * @param line line to be added
+     */
+    public void add(Line line) {
+        end++;
+        leftmost = Math.min(leftmost, line.leftmost);
+        rightmost = Math.max(rightmost, line.rightmost);
+        max_elements = Math.max(max_elements, line.texts.size());
+        used_space += line.used_space;
+    }
+
+    /**
+     * Update mlb values merging two MLBs
+     * 
+     * @param mlb multiline block to be added
+     */
+    public void add(Multiline_Block mlb) {
+        leftmost = Math.min(leftmost, mlb.leftmost);
+        rightmost = Math.max(rightmost, mlb.rightmost);
+        max_elements = Math.max(max_elements, mlb.max_elements);
+        used_space += mlb.used_space;
+        avg_distance = (avg_distance + mlb.avg_distance) / 2;
+
+    }
+
+    public void init(Line line, int b,
+            int pg) {
+        begin = b;
+        end = b;
+        leftmost = line.leftmost;
+        rightmost = line.rightmost;
+        max_elements = line.texts.size();
+        avg_distance = 0;
+        page = pg;
+        used_space = line.used_space;
+    }
 }

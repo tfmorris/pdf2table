@@ -10,6 +10,8 @@ package pdf2xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdom2.Element;
+
 public class Text_Element {
 	
 String value;
@@ -61,8 +63,54 @@ boolean artificial;
     this.artificial = false;
   }  
   
-  public Object clone() {
-  	Text_Element t = new Text_Element(this.value,this.top, this.left, this.width, this.height, this.font, this.format, this.typ);
-  	return t;
-  }
+    public Object clone() {
+        Text_Element t = new Text_Element(this.value, this.top, this.left,
+                this.width, this.height, this.font, this.format, this.typ);
+        return t;
+    }
+
+    /**
+     * Maximize bounds with those of given TextElement
+     * @param te TextElement
+     */
+    public void add(Text_Element te) {
+        last_top = Math.max(last_top, te.last_top);
+        first_top = Math.min(first_top, te.first_top);
+        int t_right = te.left + te.width;
+        width = t_right - left;
+    }
+    
+    public static Text_Element getTextElement(Element text) {
+        String value = text.getValue().trim();
+
+        int top = Integer.parseInt(text.getAttribute("top").getValue());
+        int left = Integer.parseInt(text.getAttribute("left").getValue());
+        int width = Integer.parseInt(text.getAttribute("width").getValue());
+        int height = Integer.parseInt(text.getAttribute("height").getValue());
+        int font = Integer.parseInt(text.getAttribute("font").getValue());
+
+        String typ = "number";
+        try {
+            Integer.parseInt(value);
+            Float.parseFloat(value);
+        } catch (NumberFormatException nfe) {
+            typ = "text";
+        }
+
+        List<Element> format_list = text.getChildren("b");
+        List<Element> format_list2 = text.getChildren("i");
+
+        String format = "";
+        if (format_list.size() > 0) {
+            format = "bold";
+        } else if (format_list2.size() > 0) {
+            format = "italic";
+        } else if (format_list.size() > 0 && format_list2.size() > 0) {
+            format = "bolditalic";
+        }
+
+        return new Text_Element(value, top, left, width, height, font, format,
+                typ);
+
+    }
 }

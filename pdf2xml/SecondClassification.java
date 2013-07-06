@@ -7,71 +7,51 @@
 
 package pdf2xml;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SecondClassification {
-	PrintStream dos;
-	PrintStream dos2;
-	List<Font> fonts;
-	List<Line> lines;
-	List<Multiline_Block> multiline_blocks;	
-	List<Table> tables;
-	boolean interactive_extraction;
-    String path;
-    
-    public SecondClassification(boolean interactivity, String p,
-            List<Font> font, List<Line> line, List<Multiline_Block> mlbs) {
-        this.path = p;
 
-        this.fonts = font;
-        this.lines = line;
-        this.multiline_blocks = mlbs;
-        this.tables = new ArrayList<Table>();
-        this.interactive_extraction = interactivity;
+    public static void run(boolean interactive, String path, List<Font> fonts,
+            List<Line> lines, List<Multiline_Block> mlbs) {
+        try {
+            List<Table> tables = decompose_tables(mlbs, lines);
+
+            if (interactive == true) {
+                SemiOutputFrame so = new SemiOutputFrame(tables, fonts, path);
+                so.setVisible(true);
+            } else {
+                XmlOutput.create(tables, fonts, path);
+            }
+        } catch (Exception e) {
+            System.out
+                    .println("Exception in class: SecondClassification and method: run. "
+                            + e);
+        }
     }
-	
-	public void run() {
-	  try {
-       decompose_tables();        	       
-       
-       if (this.interactive_extraction == true) {
-          SemiOutputFrame so = new SemiOutputFrame(this.tables, this.fonts, this.path);
-          so.setVisible(true);
-       }
-       else {
-          XmlOutput xml_o = new XmlOutput(this.tables, this.fonts, this.path);      
-       }             
-      } 
-      catch (Exception e) {
-        System.out.println("Exception in class: SecondClassification and method: run. " + e);	    		 	    
-      }
-    } // end of run
    
    
-    public void decompose_tables() {
-   	
-   	  for (int i=0;i<this.multiline_blocks.size();i++) {
-   	  	 Multiline_Block mlb = (Multiline_Block) this.multiline_blocks.get(i);   	  	 
+	private static List<Table> decompose_tables(List<Multiline_Block> blocks, List<Line> lines) {
+	    List<Table> tables = new ArrayList<Table>();
+
+	    for (Multiline_Block mlb : blocks) {
    	  	 int lines_before = 0;   	  	   
-   	  	 int line_count = 0;
    	  	 
    	  	 if (mlb.end - mlb.begin >= 2) {
 	     // multiline blocks with less than 3 lines will be ignored
    	  	   int b = mlb.begin;
 		
 				
-		   MyNode root = new MyNode("root",-1);
+		   Node root = new Node("root",-1);
 		   
 		   while (b<=mlb.end) {
-   	  	     Line l = this.lines.get(b);   	  	        	  	     
+   	  	     Line l = lines.get(b);   	  	        	  	     
 			 
  	   	   	 for (int j=0;j<l.texts.size();j++) {
  	   	  	 	Text_Element t = (Text_Element) l.texts.get(j);
 				if (t.artificial) {
 				}
- 	   	  	    insert_into_tree(t,root,lines_before);
+ 	   	  	    root.insert(t,lines_before);
  	   	  	 }	
 
  	   	  	
@@ -80,16 +60,12 @@ public class SecondClassification {
    	  	   } // end of while (b<=mlb.end)
    	  	   
 		   
-	       print_tree(root);
-
-		   
+	       root.print_tree();
 
    	       Table new_table = new Table();
 		   
-		   convert_to_table(root, null, new_table.columns, lines_before);
-		     
+   	       convert_to_table(root, null, new_table.columns, lines_before);
 
-		   
 		  for (int k=0; k< new_table.columns.size() -1; k++) {
 		      Column c1 = new_table.columns.get(k);
 			  Column c2 = new_table.columns.get(k+1);
@@ -106,14 +82,13 @@ public class SecondClassification {
 			
 					
 				  if (t1.value.equals("null") || t2.value.equals("null") ) {	
-				    String new_value = "";
 					if (!t1.value.equals("null")) {
 					  nt.value = t1.value;
 					  if (t1.colspan > 1) {
 					    nt.colspan--;
 					  }
 					  else {
-					   actualize_column_values(nc, t1);
+					   nc.add(t1);
 					  }
 
 					}
@@ -123,7 +98,7 @@ public class SecondClassification {
 					    nt.colspan--;
 					  }
 					  else {
-					    actualize_column_values(nc,t2);
+					    nc.add(t2);
 					  }
 					}
 				  }
@@ -168,74 +143,18 @@ public class SecondClassification {
 			 }
 		   }
 
-		
-   	        	 
-  	 
    	       new_table.page = mlb.page;
 
-   	       this.tables.add(new_table);   
+   	       tables.add(new_table);   
 
    	  	 } // end of "if more than 3 lines in multiline block"
-   	          
-	 }    	     	
+
+   	  }
+   	  return tables;
    }
 
-   public boolean insert_into_tree(Text_Element t, MyNode n, int l) {
-   
-   
-	    if (n.content.equals("null")) {
-		
-		  if (insert_into_tree(t,(MyNode) n.nodes.get(0),l))  {
-		    return true;
-		  }
-		}
-		else {
-		  if (in_boundaries(t.left, t.right, n.left, n.right) || n.content.equals("root")) {
-			int pos = 0;
-	
-			for (int i=0;i<n.nodes.size();i++) {
-			
-			  MyNode next = (MyNode) n.nodes.get(i);
-			  // it was t.left > next.right. which means completely on the right side
-			  if (t.left > next.left) { pos++; }
-			  	
-			  if ((in_boundaries(t.left, t.right, next.left, next.right) && next.level < l) || next.content.equals("null")) {
-			    if (insert_into_tree(t,next,l)) {
-				  return true;
-			    }
-			  }
-			} // end of for
-			
 
-			for (int j=n.level; j < l-1; j++) {
-			  MyNode dummy = new MyNode("null", t, j+1);
-			  n.nodes.add(pos, dummy);
-			  n = dummy;
-			  pos = 0;
-			} 
-			MyNode current = new MyNode(t,l);
-			n.nodes.add(pos,current);
-			return true;
-			
-		  }
-		
-		}
-		
-    return false;
-   
-   }
-   
-   public void print_tree(MyNode n) {
-   
-
-	for (int i=0;i<n.nodes.size();i++) {
-	   
-	   print_tree((MyNode) n.nodes.get(i));
-	
-	}
-   }
-   
-   public int convert_to_table(MyNode n, Column c, List<Column> v, int l) {
+   private static int convert_to_table(Node n, Column c, List<Column> v, int l) {
 
      if (c == null) {
 	 // root node
@@ -243,7 +162,7 @@ public class SecondClassification {
 	    for (int i=0; i < n.nodes.size(); i++) {
 		  Column new_column = new Column();
 		  v.add(new_column);
-		  spanning += convert_to_table((MyNode) n.nodes.get(i), new_column, v, l);
+		  spanning += convert_to_table((Node) n.nodes.get(i), new_column, v, l);
 		}
 		return spanning;
 	 }
@@ -254,7 +173,7 @@ public class SecondClassification {
 	      c.cells.add(n.text_element);		
 		  pos = c.cells.size();
 		  if (n.text_element.colspan == 1) {
-		      actualize_column_values(c, n.text_element);
+		      c.add(n.text_element);
 		  }
 		}
 		else {
@@ -267,13 +186,13 @@ public class SecondClassification {
 		  Column store = (Column) c.clone();
 		  int spanning = 0;
 		  
-		  spanning += convert_to_table((MyNode) n.nodes.get(0), c, v, l);
+		  spanning += convert_to_table((Node) n.nodes.get(0), c, v, l);
 
 		  for (int i=1; i < n.nodes.size(); i++) {
 		    Column new_column = new Column();
 			new_column.cells.addAll(store.cells);
 			v.add(new_column);
-			spanning += convert_to_table((MyNode) n.nodes.get(i), new_column, v, l);
+			spanning += convert_to_table((Node) n.nodes.get(i), new_column, v, l);
 		  }
 		  
 		  Text_Element t = (Text_Element) c.cells.get(pos-1);
@@ -292,33 +211,6 @@ public class SecondClassification {
 	 }
     
    }
-   
-   
-   public void actualize_column_values(Column c, Text_Element t) {
-   	 if (c.left ==  -1) {
-       c.left = t.left;
-	  }
-	  else {
-	   Math.min(c.left,t.left);
-     } 
-	 
-     c.right = Math.max(c.right,t.left + t.width);
-   }
-   
-   public void actualize_column_values_with_another_column(Column c1, Column c2) {
-     c1.left = Math.min(c1.left,c2.left);
-     c1.right = Math.max(c1.right,c2.right);
-   }
-   
-   public boolean in_boundaries(int l1, int r1, int l2, int r2) {
-      if ((l1 >= l2 && r1 <= r2) || 
-	      (l1 >= l2 && l1 <= r2 && r1 > r2) ||
-		  (l1 < l2 && r1 >= l2 && r1 <= r2) ||
-		  (l2 >= l1 && r2 <= r1))  {
-		  return true;
-		  
-	  }
-	  return false;
-   }
+
    
  }

@@ -37,7 +37,6 @@ class TopElementComparator implements Comparator<Element> {
         int top2 = Integer.parseInt(e2.getAttribute("top").getValue());
         return (top1 - top2);
     }
-
 }
 
 class TopTextElementomparator implements Comparator<Text_Element> {
@@ -142,7 +141,7 @@ List<Element> current_text_elements;
         for (int j=0;j<e_array.length;j++) {
         	
            Element e = e_array[j];
-           Text_Element current_t = getTextElement(e);
+           Text_Element current_t = Text_Element.getTextElement(e);
            
            int right_column = Math.abs(current_t.left/text_columns_width);
            
@@ -156,12 +155,12 @@ List<Element> current_text_elements;
               	if (in_the_line(current_t, l)) {
               	  // exactly in the boundaries of the line
               	  l.texts.add(current_t);
-                  actualize_line_values(current_t,l);
+                  l.add(current_t);
               	}
               	else {    
               	  Line new_line = new Line();              	  
               	  new_line.texts.add(current_t);
-                  set_new_line_values(current_t,new_line);                	  
+                  new_line.init(current_t);                	  
               	  current_tc.lines.add(new_line);
               	  distance += new_line.first_top - l.last_top;          		                              	  	
               	}
@@ -169,7 +168,7 @@ List<Element> current_text_elements;
            else {
               	  Line new_line = new Line();
               	  new_line.texts.add(current_t);
-                  set_new_line_values(current_t,new_line);              	  	             	              	 
+                  new_line.init(current_t);              	  	             	              	 
               	  current_tc.lines.add(new_line);
            } // if current_tc.lines               
            } // if right_column ...
@@ -209,16 +208,16 @@ List<Element> current_text_elements;
         	       if (result == 1) {
         	        if (t.elements.size() == 0) {
         	       	  t.elements.add(t);
-        	          actualize_text_values(t,n);     
+        	          t.add(n);     
         	        }        	               	       
         	        if (n.value.length() > 0) {        	       	    	              	       
         	          t.elements.add(n);
-        	          actualize_text_values(t,n);        	          
+        	          t.add(n);        	          
         	        }  
         	       }
         	       else if (result == 0) {
         	       	 t.value = t.value + " " + n.value;
-        	         actualize_text_values(t,n);        	       	 
+        	         t.add(n);        	       	 
         	       }
         	       p--;        	      
         	     }
@@ -247,12 +246,12 @@ List<Element> current_text_elements;
                 if (multi_modus == true) {                	
                   Multiline_Block current_mlb = this.mlbs.get(this.mlbs.size()-1);
                   sum_of_distances += d;
-                  actualize_mlb_values(current_mlb, l);                  
+                  current_mlb.add(l);                  
                 }
                 else {
                   Multiline_Block mlb = new Multiline_Block();
                   sum_of_distances = 0;
-                  set_mlb_values(mlb,l,o,page_number);                  
+                  mlb.init(l,o,page_number);                  
                   this.mlbs.add(mlb);
                   multi_modus = true;
                 }
@@ -284,8 +283,8 @@ List<Element> current_text_elements;
         	   	  	 n.count_lines++;
         	   	  	 this.lines.remove(o);
         	   	  	 o--;
-        	   	  	 actualize_text_values(n,t);              	   	  	 
-                     actualize_line_values(t,pl);        	   	  	 
+        	   	  	 n.add(t);              	   	  	 
+        	   	  	 pl.add(t);        	   	  	 
         	   	  	 control = true;
         	   	    }  
 					if (in_boundaries(t,n) == 1) {
@@ -328,10 +327,8 @@ List<Element> current_text_elements;
 
      multiline_block_merge();
 
-     SecondClassification sc = new SecondClassification(this.interactive_extraction, this.path, fonts, lines, mlbs);
-      
-     sc.run();
-    
+     SecondClassification.run(this.interactive_extraction, this.path, fonts, lines, mlbs);
+
     }
     catch (JDOMException e) { 
       System.out.println(e.getMessage());
@@ -384,7 +381,7 @@ List<Element> current_text_elements;
     
     }
 
-   public int in_boundaries(Text_Element t, Text_Element n) {
+   private static int in_boundaries(Text_Element t, Text_Element n) {
       int l1 = t.left;
 	  int r1 = t.left + t.width;
 	  
@@ -401,7 +398,7 @@ List<Element> current_text_elements;
 	  return 0;
    }
    
-    public boolean in_the_line(Text_Element t, Line l) {
+    private boolean in_the_line(Text_Element t, Line l) {
       Font f = this.fonts.get(t.font);
       
      // int text_bottom = t.top + t.height;
@@ -422,8 +419,7 @@ List<Element> current_text_elements;
       	
     }
     
-    public int belonging_together(Text_Element t, Text_Element n) {
-    	boolean merge = false;
+    private static int belonging_together(Text_Element t, Text_Element n) {
     	
     	int n_letter_width = 0;
     	int t_letter_width = 0;
@@ -464,111 +460,9 @@ List<Element> current_text_elements;
        return -1;
     }
     
-	public void actualize_line_values(Text_Element t,Line l) {			        
-			l.top = Math.min(t.top, l.top);
-			Font f = this.fonts.get(t.font);
-			int b = t.top + t.height;
-			l.bottom = Math.max(b, l.bottom);						
-			l.height = l.bottom - l.top;
-			l.leftmost = Math.min(t.left,l.leftmost);
-			l.rightmost = Math.max(l.rightmost,t.left+t.width);
-			l.font = t.font;	  
-			l.last_top = Math.max(t.top,l.last_top);  			
-			l.first_top = Math.min(t.top,l.first_top); 
-            l.used_space += t.width*t.height;			  		
-	}
 	
-    public void actualize_text_values(Text_Element pt, Text_Element t) {
-    	pt.last_top = Math.max(pt.last_top, t.last_top);
-    	pt.first_top = Math.min(pt.first_top,t.first_top);
-    	int t_right = t.left + t.width;
-    	pt.width = t_right - pt.left;
-    }
-        
-	public void set_new_line_values(Text_Element t, Line l) {
-	   l.top = t.top;
-	   Font f = this.fonts.get(t.font);
-	   l.bottom = t.top + t.height;
-	   l.height = l.bottom - l.top;
-	   l.leftmost = t.left;
-	   l.rightmost = t.left + t.width;
-	   l.font = t.font;
-	   l.last_top = t.top;
-	   l.first_top = t.top;
-	   l.used_space = t.width * t.height;	
-	}
-	
-	public void actualize_mlb_values(Multiline_Block mlb, Line l) {
-	   // actualize mlb values after adding a new line to the mlb
-	   mlb.end++;
-	   mlb.leftmost = Math.min(mlb.leftmost,l.leftmost);
-	   mlb.rightmost = Math.max(mlb.rightmost,l.rightmost);
-	   mlb.max_elements = Math.max(mlb.max_elements, l.texts.size());		   
-	   mlb.used_space += l.used_space;
-	}
 
-    public void actualize_mlb_values2(Multiline_Block m1, Multiline_Block m2) {
-      // actualize mlb values after merging two mlbs
-      m1.leftmost = Math.min(m1.leftmost,m2.leftmost);	
-	  m1.rightmost = Math.max(m1.rightmost,m2.rightmost);
-	  m1.max_elements = Math.max(m1.max_elements, m2.max_elements);		   
-	  m1.used_space += m2.used_space;
-	  m1.avg_distance = (m1.avg_distance + m2.avg_distance)/2;
-      	
-    }
-    
-    public void set_mlb_values(Multiline_Block mlb, Line l, int b, int p) {    
-      	mlb.begin = b;
-      	mlb.end = b;
-      	mlb.leftmost = l.leftmost;
-      	mlb.rightmost = l.rightmost;
-      	mlb.max_elements = l.texts.size();
-      	mlb.avg_distance = 0;
-      	mlb.page = p;
-      	mlb.used_space = l.used_space;
-    }	
-    
-	public Text_Element getTextElement(Element text) {	
-	          String value = text.getValue().trim();            
-	          
-	          int top = Integer.parseInt(text.getAttribute("top").getValue());            	          	     
-	          int left = Integer.parseInt(text.getAttribute("left").getValue());
-	          int width = Integer.parseInt(text.getAttribute("width").getValue());	          
-	          int height = Integer.parseInt(text.getAttribute("height").getValue());
-	          int font = Integer.parseInt(text.getAttribute("font").getValue());  	          
-	          Font text_f = this.fonts.get(font);
-	          int text_size = text_f.size;
-	          	          
-	          String typ = "number";	          	               
-	          try {
-	          	int int_or_not = Integer.parseInt(value);
-	          	float float_or_not = Float.parseFloat(value);        
-	          }
-	          catch (NumberFormatException nfe) {
-	            typ = "text";
-              }
-            
-              List<Element> format_list = text.getChildren("b");
-              List<Element> format_list2 = text.getChildren("i");
-              
-              String format = "";
-              if (format_list.size() > 0) {
-              	format = "bold";
-              }
-              else if (format_list2.size() > 0) {
-              	format = "italic";
-              }
-              else if (format_list.size() > 0 && format_list2.size() > 0) {
-                format = "bolditalic";   
-              }
-     
-      return new Text_Element(value,top,left,width,height,font,format,typ);
-	
-	}	
-
-	public void multiline_block_merge() {
-      int b = 0;		
-	  boolean begin = true;	
+	private void multiline_block_merge() {
 	  int steps_backward = 0;
 	  int steps_forward = 0;
 	  int before = 0;
@@ -637,19 +531,19 @@ List<Element> current_text_elements;
 	  	  	 mlb1.end = mlb2.end - (this.removed_elements_before - before);
 	  	  	 this.mlbs.remove(i);	  	  	 
 	  	  	 merge_with_before = true;
-	  	  	 actualize_mlb_values2(mlb1,mlb2);	  	  	 
+	  	  	 mlb1.add(mlb2);	  	  	 
 	  	  	 i--;
 	  	  }  	  	  
 	  	  if (mlb3.begin - mlb2.end <= 3 && mlb3.page == mlb2.page && (Math.abs(mlb2.max_elements - mlb3.max_elements) <=1)) { 
 	  	  	 if (merge_with_before == false) {
 	  	  	   mlb2.begin = mlb2.begin - (this.removed_elements_before - before);	
 	  	  	   mlb2.end = mlb3.end - (this.removed_elements_before - before) - (this.removed_elements_after - after);
-	  	  	   actualize_mlb_values2(mlb2,mlb3);
+	  	  	   mlb2.add(mlb3);
 	  	  	   this.mlbs.remove(i+1);	  	  	   	  	  	 
 	  	  	 }
 	  	  	 else {
 	  	  	   mlb1.end = mlb3.end - (this.removed_elements_before - before) - (this.removed_elements_after - after);	  	  	 	  	  	   
-	  	  	   actualize_mlb_values2(mlb1,mlb3);
+	  	  	   mlb1.add(mlb3);
 	  	  	   this.mlbs.remove(i+1);	  	  	  
 	  	  	 } 
 	  	  }
@@ -661,7 +555,7 @@ List<Element> current_text_elements;
 
 	}
 	
-    public void line_merge(int pos, int steps_back, int steps_for) {
+    private void line_merge(int pos, int steps_back, int steps_for) {
     	Multiline_Block mlb = this.mlbs.get(pos);
         Line first_line = this.lines.get(mlb.begin);   
         Line last_line = this.lines.get(mlb.end);    	
@@ -686,7 +580,7 @@ List<Element> current_text_elements;
         	   	  	 String s = n.value + " " + t.value;
         	   	  	 t.value = s;
         	   	  	 t.count_lines++;
-        	   	  	 actualize_text_values(t,n);
+        	   	  	 t.add(n);
                      count++;        	   	  	 
         	   	  }
         	   }	
@@ -696,7 +590,7 @@ List<Element> current_text_elements;
 				first_line.texts = clone;
         	   	  for (int p=0;p<first_line.texts.size();p++) {
                     Text_Element t = first_line.texts.get(p);
-                    actualize_line_values(t,first_line);
+                    first_line.add(t);
                   }
         	   	  
         	   	  this.lines.remove(mlb.begin - i);
@@ -728,7 +622,7 @@ List<Element> current_text_elements;
         	   	  	 String s = t.value + " " + n.value;
         	   	  	 t.value = s;
         	   	  	 t.count_lines++;
-        	   	  	 actualize_text_values(t,n);
+        	   	  	 t.add(n);
                      count++;    
         	   	  }
         	   }	
@@ -737,7 +631,7 @@ List<Element> current_text_elements;
         	   	  last_line.texts = new ArrayList<Text_Element>(storage); 
         	   	  for (int p=0;p<last_line.texts.size();p++) {
                     Text_Element t = last_line.texts.get(p);
-                    actualize_line_values(t,last_line);
+                    last_line.add(t);
                   }
         	   	  this.lines.remove(mlb.end+i);
         	   	  this.removed_elements_after++;     	   	          	   	  
@@ -750,31 +644,34 @@ List<Element> current_text_elements;
     }
 	
 	
-	public void debug_pdftohtml_output() {
-	  try {
-	  BufferedReader br = new BufferedReader(new FileReader(this.pdftohtml_file_name));
+    private void debug_pdftohtml_output() {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(
+                    this.pdftohtml_file_name));
 
-      PrintStream dos = new PrintStream(new FileOutputStream(new File(this.path + File.separator + "debugged_output.xml")));
-	  
-	  String current_line = br.readLine();
-	  
-	  while (current_line != null) {	  	
-	  	 current_line = current_line.replaceAll("A href","a href");
-	  	 current_line = current_line.replaceAll("<B>","<b>");
-	  	 current_line = current_line.replaceAll("<I>","<i>");	
-	  	 current_line = current_line.replaceAll("</I>","</i>");	
-	  	 current_line = current_line.replaceAll("</B>","</b>");	
-	  	   	 
-	  	 dos.println(current_line);	  	 
-	  	 current_line = br.readLine();
-	  }
-      
+            PrintStream dos = new PrintStream(new FileOutputStream(new File(
+                    this.path + File.separator + "debugged_output.xml")));
+
+            String current_line = br.readLine();
+
+            while (current_line != null) {
+                current_line = current_line.replaceAll("A href", "a href");
+                current_line = current_line.replaceAll("<B>", "<b>");
+                current_line = current_line.replaceAll("<I>", "<i>");
+                current_line = current_line.replaceAll("</I>", "</i>");
+                current_line = current_line.replaceAll("</B>", "</b>");
+
+                dos.println(current_line);
+                current_line = br.readLine();
+            }
+
             run(this.path + File.separator + "debugged_output.xml");
 
+            dos.close();
+            br.close();
         } catch (Exception e) {
             System.out.println(e);
         }
-
     }
 
 

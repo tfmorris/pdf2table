@@ -35,4 +35,18 @@ public class Column {
 	c.cells.addAll(this.cells);
     return c;
   }
+
+    public void add(Text_Element t) {
+        if (left == -1) {
+            left = t.left;
+        } else {
+            Math.min(left, t.left);
+        }
+        right = Math.max(right, t.left + t.width);
+    }
+
+    public void add(Column c2) {
+        left = Math.min(left, c2.left);
+        right = Math.max(right, c2.right);
+    }
 }

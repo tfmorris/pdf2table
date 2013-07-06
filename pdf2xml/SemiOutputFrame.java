@@ -64,7 +64,6 @@ Table undo_table;
 
         this.add_new_column = false;
         this.delete_column = false;
-        int column_position = -1;
 
         this.fonts = fonts2;
         this.counter = 0;
@@ -219,7 +218,7 @@ Table undo_table;
             }
             this.checkboxes.clear();         
         } 
-        XmlOutput xml_o = new XmlOutput(this.tables, this.fonts,this.path);
+        XmlOutput.create(this.tables, this.fonts,this.path);
         this.dispose();
       }
       catch (Exception e) {
@@ -255,7 +254,7 @@ Table undo_table;
 
         }
         else if (this.counter == this.tables.size()) {
-           XmlOutput xml_o = new XmlOutput(this.tables, this.fonts,this.path);
+           XmlOutput.create(this.tables, this.fonts,this.path);
         }
 
     }
@@ -314,18 +313,13 @@ Table undo_table;
      	this.text_areas = new ArrayList<TextArea>();
      	this.checkboxes = new ArrayList<Checkbox>();
  
-		Color panel_background_color = new Color(217,217,217);
-
 		Label page_information = new Label("Table on page " + t.page);
 		page_information.setFont(this.f3);
 		page_information.setBounds(20,20,150,20);
 		table_panel.add(page_information);
 
         Color color1 = new Color(164,164,164);
-        Color color2 = new Color(177,177,177);
-        Color color3 = new Color(203,203,203);
 
-        int i=0;
         int labels_start = 70;
         int column_width = 0;
 
@@ -479,10 +473,10 @@ Table undo_table;
     
      }
 
-     public void change_table(Table t) {
-	   Table current_table = this.tables.get(this.counter);
-       current_table = (Table) t.clone();	   	
-     }
+    public void change_table(Table t) {
+        Table current_table = this.tables.get(this.counter);
+        current_table = (Table) t.clone();
+    }
         
     
      public void merge_cells(int index,boolean s,boolean l,boolean r,boolean u,boolean d) {
