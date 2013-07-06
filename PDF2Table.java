@@ -17,7 +17,7 @@
 
 import java.io.File;
 
-import pdf2xml.execute_converter;
+import pdf2xml.PDF2XML;
 import pdf2xml.MainFrame;
 
 public class PDF2Table {
@@ -39,7 +39,7 @@ public class PDF2Table {
                         int i = file_name.indexOf(".pdf");
                         file_name = file_name.substring(0, i);
 
-                        execute_converter ec = new execute_converter(file_name,
+                        PDF2XML.convert(file_name,
                                 source.toString(), target + File.separator
                                         + file_name.toString(), "", "", false);
                     } else {
@@ -60,7 +60,7 @@ public class PDF2Table {
                         int i = file_name.indexOf(".pdf");
                         file_name = file_name.substring(0, i);
 
-                        execute_converter ec = new execute_converter(file_name,
+                        PDF2XML.convert(file_name,
                                 source.toString(), target.toString()
                                         + File.separator + file_name, args[2],
                                 args[3], false);

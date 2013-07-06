@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class second_classification {
+public class SecondClassification {
 	PrintStream dos;
 	PrintStream dos2;
 	List<Font> fonts;
@@ -21,15 +21,16 @@ public class second_classification {
 	boolean interactive_extraction;
     String path;
     
-	public second_classification(boolean interactivity,String p) {
+    public SecondClassification(boolean interactivity, String p,
+            List<Font> font, List<Line> line, List<Multiline_Block> mlbs) {
         this.path = p;
-     
-	    this.fonts = new ArrayList<Font>();
-		this.lines = new ArrayList<Line>();
-		this.multiline_blocks = new ArrayList<Multiline_Block>();
-		this.tables = new ArrayList<Table>();
-		this.interactive_extraction = interactivity;
-	}	
+
+        this.fonts = font;
+        this.lines = line;
+        this.multiline_blocks = mlbs;
+        this.tables = new ArrayList<Table>();
+        this.interactive_extraction = interactivity;
+    }
 	
 	public void run() {
 	  try {
@@ -44,7 +45,7 @@ public class second_classification {
        }             
       } 
       catch (Exception e) {
-        System.out.println("Exception in class: second_classification and method: run. " + e);	    		 	    
+        System.out.println("Exception in class: SecondClassification and method: run. " + e);	    		 	    
       }
     } // end of run
    

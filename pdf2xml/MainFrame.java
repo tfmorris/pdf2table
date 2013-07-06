@@ -224,7 +224,7 @@ private String f_name;
         }
         else {
         	
-        execute_converter ec = new execute_converter(this.f_name,source,target,from_page,to_page,interactive_extraction);	         
+        PDF2XML.convert(this.f_name,source,target,from_page,to_page,interactive_extraction);	         
         }
     }
     catch (Exception e) {

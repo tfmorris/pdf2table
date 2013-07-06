@@ -20,7 +20,7 @@ List<MyNode> nodes;
 Text_Element text_element;
 
   public MyNode(String c, int l) {
-    // used only for the construction of the root element in second_classification.java
+    // used only for the construction of the root element in SecondClassification.java
     this.content = c;
 	this.level = l;
 	this.nodes = new ArrayList<MyNode>();

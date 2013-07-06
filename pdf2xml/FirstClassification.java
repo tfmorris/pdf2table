@@ -54,7 +54,7 @@ class LeftTextElementComparator implements Comparator<Text_Element> {
     }
 }
 
-public class first_classification {
+public class FirstClassification {
 	
 List<Font> fonts;
 List<Line> lines;
@@ -75,7 +75,7 @@ int distance_sum = 0;
 
 List<Element> current_text_elements;
 
-	public first_classification(boolean interactivity, String p) {//, int c) {
+	public FirstClassification(boolean interactivity, String p) {//, int c) {
         this.fonts = new ArrayList<Font>();
         this.lines = new ArrayList<Line>();
 //        this.font_counter = new List();
@@ -328,12 +328,8 @@ List<Element> current_text_elements;
 
      multiline_block_merge();
 
-     second_classification sc = new second_classification(this.interactive_extraction, this.path);
+     SecondClassification sc = new SecondClassification(this.interactive_extraction, this.path, fonts, lines, mlbs);
       
-     sc.fonts = new ArrayList<Font>(this.fonts);
-     sc.lines = new ArrayList<Line>(this.lines);
-//     sc.font_counter = (List) this.font_counter.clone();
-     sc.multiline_blocks = new ArrayList<Multiline_Block>(this.mlbs);
      sc.run();
     
     }
@@ -383,7 +379,7 @@ List<Element> current_text_elements;
       System.out.println(e);
     }  
     catch (Exception e) {
-      System.out.println("Exception in class: first_classification. " + e);
+      System.out.println("Exception in class: FirstClassification. " + e);
     }
     
     }

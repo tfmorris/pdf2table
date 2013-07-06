@@ -12,12 +12,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-public class execute_converter {
+public class PDF2XML {
 	
-private FileOutputStream fos;
-private OutputStreamWriter osw;
 
-	public execute_converter(String f,String s, String t,String from,String to,boolean interactive_extraction) {
+	public static void convert(String f,String s, String t,String from,String to,boolean interactive_extraction) {
        try {
        System.out.println(t);
 	   
@@ -25,9 +23,14 @@ private OutputStreamWriter osw;
        my_file.mkdirs();
 	   
        File my_file2 = new File(t, "pdf2xml.dtd");
-	   this.fos = new FileOutputStream(my_file2);
-	   this.osw = new OutputStreamWriter(this.fos);
-	   build_dtd();
+       FileOutputStream fos = new FileOutputStream(my_file2);
+       OutputStreamWriter osw = new OutputStreamWriter(fos);
+       try {
+           build_dtd(osw);
+       } finally {
+           osw.close();
+           fos.close();
+       }
        
 	   String cmd = "";
        
@@ -55,7 +58,7 @@ private OutputStreamWriter osw;
 			  }
 		    }		
     
-		first_classification fc = new first_classification(interactive_extraction,t);
+		FirstClassification fc = new FirstClassification(interactive_extraction,t);
 		fc.run(t + File.separator + f + ".xml");	
 
 	    }
@@ -67,14 +70,14 @@ private OutputStreamWriter osw;
 		}        
 	}
     catch (Exception e) {
-       System.out.println("Exception in class: execute_converter and method: constructor. " + e);	    		 	        	
+       System.out.println("Exception in class: PDF2XML and method: constructor. " + e);	    		 	        	
     }
         
 
  			
 	}
 	
-	public void build_dtd() {
+	public static void build_dtd(OutputStreamWriter osw) throws IOException {
 	
 		String dtd = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
 "<!ELEMENT pdf2xml (page+,line*,fontspec*)>\n" + 
@@ -111,16 +114,7 @@ private OutputStreamWriter osw;
 	"left CDATA #REQUIRED\n" + 
 	"font CDATA #REQUIRED\n" + 
 ">";
-try {
-	this.osw.write(dtd,0,dtd.length());
-	this.osw.close();
-	this.fos.close();	
-}
-catch(IOException ie) {
-	
-}
-catch (Exception e) {
-   System.out.println("Exception in class: execute_converter and method: build_dtd. " + e);	    		 		
-}
-    }
+
+	osw.write(dtd,0,dtd.length());
+	}
 }
