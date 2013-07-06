@@ -52,8 +52,6 @@ public class FirstClassification {
     List<Multiline_Block> mlbs;
     boolean interactive_extraction;
     String path;
-//    int removed_elements_before;
-//    int removed_elements_after;
     
     int distance_sum = 0;
 
@@ -63,8 +61,6 @@ public class FirstClassification {
         this.mlbs = new ArrayList<Multiline_Block>();
         this.interactive_extraction = interactivity;
         this.path = p;
-//        this.removed_elements_before = 0;
-//        this.removed_elements_after = 0;
     }
 
     
