@@ -24,10 +24,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 
 class top_comparator implements Comparator<Element>  {
@@ -75,7 +75,7 @@ boolean modus;
 
 int distance_sum = 0;
 
-List<Line> current_text_elements;
+List<Element> current_text_elements;
 
 	public first_classification(boolean interactivity, String p) {//, int c) {
         this.fonts = new ArrayList<Font>();
