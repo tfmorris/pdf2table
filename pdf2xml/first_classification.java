@@ -303,7 +303,7 @@ List<Element> current_text_elements;
 					 }			 
 					 else {*/
 					 //if (belongs == 0 || count_single_lines > 5) {
-                       Multiline_Block current_mlb = this.mlbs.get(this.mlbs.size());                
+                       Multiline_Block current_mlb = this.mlbs.get(this.mlbs.size()-1);                
                        int mlb_element_count = current_mlb.end - current_mlb.begin;
                        if (mlb_element_count > 0) {
                          current_mlb.avg_distance = sum_of_distances/mlb_element_count;
