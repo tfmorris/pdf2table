@@ -113,13 +113,13 @@ int column_position;
 	
   public void ok() {
 	  if (!this.new_row.getText().equals("")) {
-  	  Column c = (Column) this.table.columns.get(0);	  
+  	  Column c = this.table.columns.get(0);	  
   	  try {
   	     int row_position = Integer.parseInt(this.new_row.getText());
   	     if (row_position > 0 && row_position <= c.cells.size()) {
   	       
   	       	  for (int i=0;i<this.table.columns.size();i++) {
-  	       	  	 Column current_c = (Column) this.table.columns.get(i);
+  	       	  	 Column current_c = this.table.columns.get(i);
   	       	  	 Text_Element dummy = new Text_Element();
   	       	  	 current_c.cells.add(row_position-1, dummy);  	       	  	 
   	       	  }
@@ -134,7 +134,7 @@ int column_position;
   	  try {
   	     int column_pos = Integer.parseInt(this.new_column.getText());
   	     if (column_pos <= this.table.columns.size() && column_pos > 0) {
-  	       Column c = (Column) this.table.columns.get(this.table.columns.size()-1);
+  	       Column c = this.table.columns.get(this.table.columns.size()-1);
   	       Column new_column = new Column();
   	       for (int i=0;i<c.cells.size();i++) {
              Text_Element dummy = new Text_Element();  	       	             
@@ -150,10 +150,10 @@ int column_position;
   	if (!this.delete_row.getText().equals("")) {
   	  try {      
         int row_position = Integer.parseInt(this.delete_row.getText());
-        Column c = (Column) this.table.columns.get(0);
+        Column c = this.table.columns.get(0);
   	      if (row_position > 0 && row_position <= c.cells.size()) {  	       
   	       	  for (int i=0;i<this.table.columns.size();i++) {
-  	       	  	 Column current_c = (Column) this.table.columns.get(i);
+  	       	  	 Column current_c = this.table.columns.get(i);
   	       	  	 current_c.cells.remove(row_position-1);
   	       	  }  	       
   	      }

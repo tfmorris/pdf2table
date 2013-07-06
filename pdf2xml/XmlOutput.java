@@ -163,7 +163,7 @@ public class XmlOutput  {
        ps.println("<tables>");
        
        for (int km=0;km<fonts.size();km++) {
-       	  Font f = (Font) fonts.get(km);
+       	  Font f = fonts.get(km);
        	  ps.println("<fontspec id=\"" + f.id + 
        	     "\" size=\"" + f.size + "\" family=\"" + 
 			 f.family + "\" color=\"" + f.color + "\"/>");       	
@@ -172,7 +172,7 @@ public class XmlOutput  {
            
        for (int i=0;i < tables.size();i++) {
        	 		
-       	 Table c_table = (Table) tables.get(i);
+       	 Table c_table = tables.get(i);
 		 int cells_on_column = 0;
 		 	
          ps.println("<table>");
@@ -188,10 +188,10 @@ public class XmlOutput  {
 		    int p = 0;
 			ps.println("<header_line>");
 			while (p < c_table.columns.size()) {
-			   Column cc1 = (Column) c_table.columns.get(p);
+			   Column cc1 = c_table.columns.get(p);
 			   cells_on_column = cc1.cells.size();
 			   cc1.header = p+j;
-			   Text_Element t1 = (Text_Element) cc1.cells.get(j);
+			   Text_Element t1 = cc1.cells.get(j);
 			   ps.println("<header_element id=\"" + (p+j) + "\" sh=\"" + cc1.header); 
 			   ps.println("\" font=\"" + t1.font + "\" colspan=\"" + t1.colspan + "\">");
        	 	   ps.println("<![CDATA[");
@@ -211,8 +211,8 @@ public class XmlOutput  {
 		  ps.println("<data_row>"); 	           
           int k = 0;
           while (k < c_table.columns.size()) {
-               Column cc = (Column) c_table.columns.get(k);      
-			   Text_Element t = (Text_Element) cc.cells.get(j);
+               Column cc = c_table.columns.get(k);      
+			   Text_Element t = cc.cells.get(j);
         	   ps.print("<cell sh=\"" + cc.header + "\" font=\"" + t.font);                                     	      	 	       
        	 	   ps.println("\" colspan=\"" + t.colspan + "\" format=\"" + t.format + "\">");  
        	 	   ps.println("<![CDATA[");

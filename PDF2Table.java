@@ -52,8 +52,6 @@ public class PDF2Table {
             } else if (args.length == 4) {
                 File source = new File(args[0]);
                 File target = new File(args[1]);
-                int f = Integer.parseInt(args[2]);
-                int l = Integer.parseInt(args[3]);
                 if (source.isFile() && target.isDirectory()) {
                     String file_name = source.getName();
                     if (file_name.endsWith(".pdf")) {
