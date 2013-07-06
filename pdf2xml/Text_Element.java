@@ -8,9 +8,27 @@
 package pdf2xml;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.jdom2.Element;
+
+
+
+class TopComparator implements Comparator<Text_Element> {
+
+    public int compare(Text_Element t1, Text_Element t2) {
+        return (t1.top - t2.top);
+    }
+}
+
+class LeftComparator implements Comparator<Text_Element> {
+
+    public int compare(Text_Element t1, Text_Element t2) {
+        return (t1.left - t2.left);
+    }
+}
 
 public class Text_Element {
 
@@ -192,4 +210,66 @@ public class Text_Element {
         }
         return -1;
     }
+
+
+    /**
+     * Sort sub elements and concatenate into a new value
+     */
+    void coalesceSubElements() {
+        if (elements.size() > 0) {
+            Collections.sort(elements, new TopComparator());
+            StringBuilder sb = new StringBuilder();
+            for (Text_Element element : elements) {
+                sb.append(element.value).append(" ");
+            }
+            value = sb.toString();
+            elements.clear();
+        }
+    }
+
+    /**
+     * Process all the text elements for a single line of text and reduce/merge
+     * into a simpler list of elements.
+     * 
+     * @param texts
+     */
+    static void processLineTexts(List<Text_Element> texts) {
+        leftSort(texts);
+    
+        int p = 0;
+        while (p<texts.size()-1) {
+            Text_Element t = texts.get(p);
+            Text_Element n = texts.get(p+1);
+    
+            int result = belong_together(t,n);
+    
+            if (result != -1) {
+                texts.remove(p + 1);
+                if (result == 1) {
+                    if (t.elements.size() == 0) {
+                        t.elements.add(t);
+                        t.add(n);
+                    }
+                    if (n.value.length() > 0) {
+                        t.elements.add(n);
+                        t.add(n);
+                    }
+                } else if (result == 0) {
+                    t.value = t.value + " " + n.value;
+                    t.add(n);
+                }
+                p--;
+            }
+            p++;
+        }
+    
+        for (Text_Element t : texts) {
+            t.coalesceSubElements();
+        }
+    }
+
+    static void leftSort(List<Text_Element> elements) {
+        Collections.sort(elements, new LeftComparator());
+    }
+
 }

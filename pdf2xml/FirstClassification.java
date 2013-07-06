@@ -19,7 +19,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -31,6 +30,9 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 
+/**
+ * Comparator to sort elements by the Y values of the tops.
+ */
 class TopElementComparator implements Comparator<Element> {
 
     public int compare(Element e1, Element e2) {
@@ -40,19 +42,6 @@ class TopElementComparator implements Comparator<Element> {
     }
 }
 
-class TopTextElementComparator implements Comparator<Text_Element> {
-
-    public int compare(Text_Element t1, Text_Element t2) {
-        return (t1.top - t2.top);
-    }
-}
-
-class LeftTextElementComparator implements Comparator<Text_Element> {
-
-    public int compare(Text_Element t1, Text_Element t2) {
-        return (t1.left - t2.left);
-    }
-}
 
 public class FirstClassification {
 
@@ -110,59 +99,11 @@ public class FirstClassification {
 
     // TODO: This giant method needs to be split up more
     private int doPage(int lines_before, Element page) {
-        List<Text_Column> text_columns = new ArrayList<Text_Column>();
         int page_number = Integer.parseInt(page.getAttribute("number").getValue());
-        int page_height = Integer.parseInt(page.getAttribute("height").getValue());
-        int page_width = Integer.parseInt(page.getAttribute("width").getValue());
-        int page_text_columns_count = 1;
-        
-        int text_columns_width = page_width/page_text_columns_count;
-
-        for (int i=0;i<page_text_columns_count;i++) {
-            Text_Column tc = new Text_Column(text_columns_width);
-            text_columns.add(tc);
-        }
 
         this.fonts.addAll(getFonts(page));
 
-        int distance = 0;
-        Text_Column current_tc;
-
-        List<Element> text_elements = new LinkedList<Element>(page.getChildren("text"));
-        Collections.sort(text_elements, new TopElementComparator());
-        
-        for (Element e : text_elements) {
-            Text_Element current_t = Text_Element.getTextElement(e);
-
-            int right_column = Math.abs(current_t.left/text_columns_width);
-
-            if (right_column < text_columns.size()) {
-
-                current_tc = text_columns.get(right_column);
-
-                if (current_tc.lines.size() > 0) {
-                    Line l = current_tc.lines.get(current_tc.lines.size()-1);
-
-                    if (in_the_line(current_t, l)) {
-                        // exactly in the boundaries of the line
-                        l.texts.add(current_t);
-                        l.add(current_t);
-                    } else {
-                        Line new_line = new Line();
-                        new_line.texts.add(current_t);
-                        new_line.init(current_t);
-                        current_tc.lines.add(new_line);
-                        distance += new_line.first_top - l.last_top;
-                    }
-                } else {
-                    Line new_line = new Line();
-                    new_line.texts.add(current_t);
-                    new_line.init(current_t);
-                    current_tc.lines.add(new_line);
-                } // if current_tc.lines
-            } // if right_column ...
-        } // for e_array.length
-
+        List<Text_Column> text_columns =  generateColumns(page, 1);
         for (Text_Column tc : text_columns) {
             this.lines.addAll(tc.lines);
         }
@@ -174,52 +115,7 @@ public class FirstClassification {
         for (int o=lines_before;o<this.lines.size();o++) {
             Line l = this.lines.get(o);
             
-            Collections.sort(l.texts, new LeftTextElementComparator());
-
-            int p = 0;
-
-            while (p<l.texts.size()-1) {
-                Text_Element t = l.texts.get(p);
-                Text_Element n = l.texts.get(p+1);
-
-                int result = Text_Element.belong_together(t,n);
-
-                if (result != -1) {
-                    l.texts.remove(p + 1);
-                    if (result == 1) {
-                        if (t.elements.size() == 0) {
-                            t.elements.add(t);
-                            t.add(n);
-                        }
-                        if (n.value.length() > 0) {
-                            t.elements.add(n);
-                            t.add(n);
-                        }
-                    } else if (result == 0) {
-                        t.value = t.value + " " + n.value;
-                        t.add(n);
-                    }
-                    p--;
-                }
-                p++;
-            }
-
-            for (int h=0;h<l.texts.size();h++) {
-                Text_Element t = l.texts.get(h);
-
-                if (t.elements.size() > 0) {
-                    Text_Element[] t_array2 = new Text_Element[t.elements.size()];
-                    t.elements.toArray(t_array2);
-
-                    Arrays.sort(t_array2, new TopTextElementComparator());
-                    String value = "";
-                    for (Text_Element element : t_array2) {
-                        value += element.value + " ";
-                    }
-                    t.value = value;
-                    t.elements.clear();
-                }
-            }
+            Text_Element.processLineTexts(l.texts);
 
             if (l.texts.size() > 1) {
                 // multi-line
@@ -300,6 +196,56 @@ public class FirstClassification {
         multi_modus = false;
         lines_before = this.lines.size();
         return lines_before;
+    }
+
+
+    private List<Text_Column> generateColumns(Element page, int column_count) {
+        List<Text_Column> text_columns = new ArrayList<Text_Column>();
+        int page_width = Integer.parseInt(page.getAttribute("width").getValue());
+        int text_columns_width = page_width/column_count;
+
+        for (int i=0;i<column_count;i++) {
+            Text_Column tc = new Text_Column(text_columns_width);
+            text_columns.add(tc);
+        }
+        int distance = 0;
+        Text_Column current_tc;
+
+        List<Element> text_elements = new LinkedList<Element>(page.getChildren("text"));
+        Collections.sort(text_elements, new TopElementComparator());
+        
+        for (Element e : text_elements) {
+            Text_Element current_t = Text_Element.getTextElement(e);
+
+            int right_column = Math.abs(current_t.left/text_columns_width);
+
+            if (right_column < text_columns.size()) {
+
+                current_tc = text_columns.get(right_column);
+
+                if (current_tc.lines.size() > 0) {
+                    Line l = current_tc.lines.get(current_tc.lines.size()-1);
+
+                    if (in_the_line(current_t, l)) {
+                        // exactly in the boundaries of the line
+                        l.texts.add(current_t);
+                        l.add(current_t);
+                    } else {
+                        Line new_line = new Line();
+                        new_line.texts.add(current_t);
+                        new_line.init(current_t);
+                        current_tc.lines.add(new_line);
+                        distance += new_line.first_top - l.last_top;
+                    }
+                } else {
+                    Line new_line = new Line();
+                    new_line.texts.add(current_t);
+                    new_line.init(current_t);
+                    current_tc.lines.add(new_line);
+                } // if current_tc.lines
+            } // if right_column ...
+        } // for e_array.length
+        return text_columns;
     }
 
 
