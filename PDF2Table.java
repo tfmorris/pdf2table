@@ -11,7 +11,7 @@ import pdf2xml.execute_converter;
 import pdf2xml.userinterface;
 
 
-public class pdf2table {
+public class PDF2Table {
 	
 	public static void main(String args[]) {
 	
