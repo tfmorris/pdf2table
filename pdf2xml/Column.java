@@ -12,29 +12,29 @@ import java.util.List;
 
 public class Column {
 
-  List<Text_Element> cells;
-  int left;
-  int right;
-  int empty_cells;
-  int header;
-    
-  public Column(int l, int r) {
-    this.cells = new ArrayList<Text_Element>();	 
-    this.left = l;
-    this.right = r;
-    this.empty_cells = 0;
-    this.header = -1;
-  }
-  
-  public Column() {
-      this(-1,-1);
-  }
+    List<Text_Element> cells;
+    int left;
+    int right;
+    int empty_cells;
+    int header;
 
-  public Object clone() {
-    Column c = new Column(this.left, this.right);
-	c.cells.addAll(this.cells);
-    return c;
-  }
+    public Column(int l, int r) {
+        this.cells = new ArrayList<Text_Element>();
+        this.left = l;
+        this.right = r;
+        this.empty_cells = 0;
+        this.header = -1;
+    }
+
+    public Column() {
+        this(-1, -1);
+    }
+
+    public Object clone() {
+        Column c = new Column(this.left, this.right);
+        c.cells.addAll(this.cells);
+        return c;
+    }
 
     public void add(Text_Element t) {
         if (left == -1) {

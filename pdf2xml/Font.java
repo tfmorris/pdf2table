@@ -9,17 +9,17 @@ package pdf2xml;
 
 public class Font {
 
-int page;
-int id;
-int size;	 
-String family;
-String color;
+    int page;
+    int id;
+    int size;
+    String family;
+    String color;
 
-  public Font(int p,int i,int s,String f,String c) {
-  	 this.page = p;
-  	 this.id = i;
-  	 this.size = s;
-  	 this.family = f;
-  	 this.color = c;
-  }	
+    public Font(int p, int i, int s, String f, String c) {
+        this.page = p;
+        this.id = i;
+        this.size = s;
+        this.family = f;
+        this.color = c;
+    }
 }

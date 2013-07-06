@@ -12,12 +12,12 @@ import java.util.List;
 
 public class Text_Column {
 
-List<Line> lines;
-int width;
+    List<Line> lines;
+    int width;
 
-  public Text_Column(int w) {
-    this.lines = new ArrayList<Line>();
-    this.width = w;
-  }
+    public Text_Column(int w) {
+        this.lines = new ArrayList<Line>();
+        this.width = w;
+    }
 
 }

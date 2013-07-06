@@ -50,7 +50,7 @@ public class Node {
                 return true;
             }
         } else {
-            if (in_boundaries(t.left, t.right, left, right) 
+            if (in_boundaries(t.left, t.right, left, right)
                     || content.equals("root")) {
                 int pos = 0;
 
@@ -60,7 +60,7 @@ public class Node {
                     // it was t.left > next.right. which means completely on the right side
                     if (t.left > next.left) { pos++; }
 
-                    if ((in_boundaries(t.left, t.right, next.left, next.right) && next.level < l) 
+                    if ((in_boundaries(t.left, t.right, next.left, next.right) && next.level < l)
                             || next.content.equals("null")) {
                         if (next.insert(t,l)) {
                             return true;
@@ -74,7 +74,7 @@ public class Node {
                     n.nodes.add(pos, dummy);
                     n = dummy;
                     pos = 0;
-                } 
+                }
                 Node current = new Node(t,l);
                 n.nodes.add(pos,current);
                 return true;
@@ -85,7 +85,7 @@ public class Node {
 
 
     private  static boolean in_boundaries(int l1, int r1, int l2, int r2) {
-        if ((l1 >= l2 && r1 <= r2) || 
+        if ((l1 >= l2 && r1 <= r2) ||
                 (l1 >= l2 && l1 <= r2 && r1 > r2) ||
                 (l1 < l2 && r1 >= l2 && r1 <= r2) ||
                 (l2 >= l1 && r2 <= r1))  {

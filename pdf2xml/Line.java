@@ -12,22 +12,22 @@ import java.util.List;
 
 public class Line {
 
-  List<Text_Element> texts;
-  
-  int top;
-  int bottom;
-  int height;
-  int leftmost;
-  int rightmost;
-  int font;  
-  int last_top;
-  int first_top;
-  int used_space;
-  String typ;
-  
-  public Line() {
-    this.texts = new ArrayList<Text_Element>();	            
-  }
+    List<Text_Element> texts;
+
+    int top;
+    int bottom;
+    int height;
+    int leftmost;
+    int rightmost;
+    int font;
+    int last_top;
+    int first_top;
+    int used_space;
+    String typ;
+
+    public Line() {
+        this.texts = new ArrayList<Text_Element>();
+    }
 
     public void init(Text_Element t) {
         top = t.top;

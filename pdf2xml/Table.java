@@ -13,20 +13,20 @@ import java.util.List;
 public class Table {
 
 
- List<Column> columns;
- int page;
- int datarow_begin;
- String title = "";
- 
- public Table() {
-   this.columns = new ArrayList<Column>();
- } 	
- 
- public Object clone() {
-   Table t = new Table();
-   t.columns = new ArrayList<Column>(this.columns);
-   t.page = this.page;
-   t.datarow_begin = this.datarow_begin;	
-   return t;
- }	
+    List<Column> columns;
+    int page;
+    int datarow_begin;
+    String title = "";
+
+    public Table() {
+        this.columns = new ArrayList<Column>();
+    }
+
+    public Object clone() {
+        Table t = new Table();
+        t.columns = new ArrayList<Column>(this.columns);
+        t.page = this.page;
+        t.datarow_begin = this.datarow_begin;
+        return t;
+    }
 }

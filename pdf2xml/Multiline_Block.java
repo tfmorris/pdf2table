@@ -36,7 +36,8 @@ public class Multiline_Block {
     /**
      * Update mlb values after adding a new line .
      * 
-     * @param line line to be added
+     * @param line
+     *            line to be added
      */
     public void add(Line line) {
         end++;
@@ -49,7 +50,8 @@ public class Multiline_Block {
     /**
      * Update mlb values merging two MLBs
      * 
-     * @param mlb multiline block to be added
+     * @param mlb
+     *            multiline block to be added
      */
     public void add(Multiline_Block mlb) {
         leftmost = Math.min(leftmost, mlb.leftmost);
@@ -60,8 +62,7 @@ public class Multiline_Block {
 
     }
 
-    public void init(Line line, int b,
-            int pg) {
+    public void init(Line line, int b, int pg) {
         begin = b;
         end = b;
         leftmost = line.leftmost;
