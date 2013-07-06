@@ -36,11 +36,11 @@ public class second_classification {
        decompose_tables();        	       
        
        if (this.interactive_extraction == true) {
-          semi_output so = new semi_output(this.tables, this.fonts, this.path);
+          SemiOutputFrame so = new SemiOutputFrame(this.tables, this.fonts, this.path);
           so.setVisible(true);
        }
        else {
-          xml_output xml_o = new xml_output(this.tables, this.fonts, this.path);      
+          XmlOutput xml_o = new XmlOutput(this.tables, this.fonts, this.path);      
        }             
       } 
       catch (Exception e) {

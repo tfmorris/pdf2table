@@ -47,11 +47,11 @@ class TopTextElementomparator implements Comparator<Text_Element> {
     }
 }
 
-class LeftTextElementComparator implements Comparator<Text_Element>  {
-	  
-	  public int compare(Text_Element t1, Text_Element t2) {
-	    return (t1.left - t2.left);
-	  }
+class LeftTextElementComparator implements Comparator<Text_Element> {
+
+    public int compare(Text_Element t1, Text_Element t2) {
+        return (t1.left - t2.left);
+    }
 }
 
 public class first_classification {
@@ -773,14 +773,13 @@ List<Element> current_text_elements;
 	  	 current_line = br.readLine();
 	  }
       
-      run(this.path + File.separator + "debugged_output.xml");
-      
-	 }
-	 catch(Exception e) {
-	   System.out.println(e);	
-	 }
-	 
-	}
+            run(this.path + File.separator + "debugged_output.xml");
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
 
 
 }
