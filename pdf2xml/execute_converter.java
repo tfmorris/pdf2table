@@ -36,7 +36,7 @@ private OutputStreamWriter osw;
 		  
 			if (from.equals("") || to.equals("")) {
 		      	  
-	   	      cmd = "pdftohtml -xml " + s + " " +  t + File.pathSeparator + f;
+	   	      cmd = "pdftohtml -xml " + s + " " +  t + File.separator + f;
 			  System.out.println(cmd);
 	   	      Process p = rt.exec(cmd);	   	    
               p.waitFor();
@@ -45,7 +45,7 @@ private OutputStreamWriter osw;
 		      try {		      	
 		      	int a = Integer.parseInt(from);
 		      	int b = Integer.parseInt(to);
-			    cmd = "pdftohtml -f " + a + " -l " + b + " -xml " + s + " " + t + File.pathSeparator + f;	
+			    cmd = "pdftohtml -f " + a + " -l " + b + " -xml " + s + " " + t + File.separator + f;	
 				System.out.println(cmd);    	
 			    Process p = rt.exec(cmd);
 				p.waitFor();
@@ -56,7 +56,7 @@ private OutputStreamWriter osw;
 		    }		
     
 		first_classification fc = new first_classification(interactive_extraction,t);
-		fc.run(t + File.pathSeparator + f + ".xml");	
+		fc.run(t + File.separator + f + ".xml");	
 
 	    }
 	    catch (IOException ie) {

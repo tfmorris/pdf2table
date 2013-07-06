@@ -760,7 +760,7 @@ List<Element> current_text_elements;
 	  try {
 	  BufferedReader br = new BufferedReader(new FileReader(this.pdftohtml_file_name));
 
-      PrintStream dos = new PrintStream(new FileOutputStream(new File(this.path + File.pathSeparator + "debugged_output.xml")));
+      PrintStream dos = new PrintStream(new FileOutputStream(new File(this.path + File.separator + "debugged_output.xml")));
 	  
 	  String current_line = br.readLine();
 	  
@@ -775,7 +775,7 @@ List<Element> current_text_elements;
 	  	 current_line = br.readLine();
 	  }
       
-      run(this.path + File.pathSeparator + "debugged_output.xml");
+      run(this.path + File.separator + "debugged_output.xml");
       
 	 }
 	 catch(Exception e) {

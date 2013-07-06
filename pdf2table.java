@@ -31,7 +31,7 @@ public class pdf2table {
              int i = file_name.indexOf(".pdf");
 			 file_name = file_name.substring(0,i);			 
 
-			 execute_converter ec = new execute_converter(file_name,source.toString(),target+File.pathSeparator+file_name.toString(),"","",false);			 
+			 execute_converter ec = new execute_converter(file_name,source.toString(),target+File.separator+file_name.toString(),"","",false);			 
 		   }
 		   else {
 		     throw new Exception("The source file must be a PDF file (example.pdf)!");
@@ -53,7 +53,7 @@ public class pdf2table {
 			 file_name = file_name.substring(0,i);
 			 
 
-             execute_converter ec = new execute_converter(file_name,source.toString(),target.toString()+File.pathSeparator+file_name,args[2],args[3],false);
+             execute_converter ec = new execute_converter(file_name,source.toString(),target.toString()+File.separator+file_name,args[2],args[3],false);
 		   }
 		   else {
              throw new Exception("The source file must be a PDF file (example.pdf)!");
