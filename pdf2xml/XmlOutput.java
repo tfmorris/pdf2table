@@ -63,22 +63,22 @@ public class XmlOutput  {
          "<tr>\n" +
          "<xsl:for-each select=\"cell\">\n" +
              "<td colspan=\"{@colspan}\">\n" +
-             "<xsl:if test=\"@format='bold'\">\n" +
+             "<xsl:if test=\"@style='bold'\">\n" +
                 "<b>\n" +
                 "<xsl:value-of select=\".\" />\n" +
                 "</b>\n" +
              "</xsl:if>\n" +
-             "<xsl:if test=\"@format='italic'\">\n" +
+             "<xsl:if test=\"@style='italic'\">\n" +
                 "<i>\n" +
                 "<xsl:value-of select=\".\" />\n" +
                 "</i>\n" +
              "</xsl:if>\n" +
-             "<xsl:if test=\"@format='bolditalic'\">\n" +
+             "<xsl:if test=\"@style='bolditalic'\">\n" +
                 "<b><i>\n" +
                 "<xsl:value-of select=\".\" />\n" +
                 "</i></b>\n" +
              "</xsl:if>\n" +
-             "<xsl:if test=\"@format=''\">\n" +
+             "<xsl:if test=\"@style=''\">\n" +
                 "<xsl:value-of select=\".\" />\n" +
              "</xsl:if>\n" +
              "</td>\n" +
@@ -135,7 +135,7 @@ public class XmlOutput  {
 	          "sh CDATA #REQUIRED\n" +
 	          "font CDATA #REQUIRED\n" +
 	          "colspan CDATA #REQUIRED\n" +
-              "format CDATA #REQUIRED\n" +
+              "style CDATA #REQUIRED\n" +
           ">\n";
 
             ps.print(dtd_value);
@@ -217,7 +217,7 @@ public class XmlOutput  {
                         Column cc = c_table.columns.get(k);
                         Text_Element t = cc.cells.get(j);
                         ps.print("<cell sh=\"" + cc.header + "\" font=\"" + t.font);
-                        ps.println("\" colspan=\"" + t.colspan + "\" format=\"" + t.format + "\">");
+                        ps.println("\" colspan=\"" + t.colspan + "\" style=\"" + t.style + "\">");
                         ps.println("<![CDATA[");
                         if (!t.value.equals("null")) {
                             ps.println(t.value);

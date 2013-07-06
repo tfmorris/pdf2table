@@ -12,33 +12,16 @@ import java.util.List;
 
 public class SecondClassification {
 
-    public static void run(boolean interactive, String path, List<Font> fonts,
-            List<Line> lines, List<Multiline_Block> mlbs) {
-        try {
-            List<Table> tables = decompose_tables(mlbs, lines);
+    // multiline blocks with less than 3 lines will be ignored
+    private static final int MIN_BLOCK_LINES = 2;
 
-            if (interactive == true) {
-                SemiOutputFrame so = new SemiOutputFrame(tables, fonts, path);
-                so.setVisible(true);
-            } else {
-                XmlOutput.create(tables, fonts, path);
-            }
-        } catch (Exception e) {
-            System.out
-            .println("Exception in class: SecondClassification and method: run. "
-                    + e);
-        }
-    }
-
-
-    private static List<Table> decompose_tables(List<Multiline_Block> blocks, List<Line> lines) {
+    static List<Table> decompose_tables(List<Multiline_Block> blocks, List<Line> lines) {
         List<Table> tables = new ArrayList<Table>();
 
         for (Multiline_Block mlb : blocks) {
             int lines_before = 0;
 
-            if (mlb.end - mlb.begin >= 2) {
-                // multiline blocks with less than 3 lines will be ignored
+            if (mlb.end - mlb.begin >= MIN_BLOCK_LINES) {
                 int b = mlb.begin;
 
                 Node root = new Node("root",-1);

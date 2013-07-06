@@ -14,6 +14,9 @@ import org.jdom2.Element;
 
 public class Text_Element {
 
+    public enum Type  {TEXT, NUMBER};
+    public enum Style {NORMAL, BOLD, ITALIC, BOLD_ITALIC};
+    
     String value;
     int top;
     int left;
@@ -21,8 +24,8 @@ public class Text_Element {
     int height;
     int right;
     int font;
-    String format = "";
-    String typ;
+    Style style = Style.NORMAL;
+    Type typ;
     int count_lines;
     List<Text_Element> elements;
     int last_top;
@@ -30,8 +33,8 @@ public class Text_Element {
     int colspan = 1;
     boolean artificial;
 
-    public Text_Element(String v, int t, int l, int w, int h, int f, String f2,
-            String t2) {
+    public Text_Element(String v, int t, int l, int w, int h, int f, Style f2,
+            Type t2) {
         this.value = v;
         this.top = t;
         this.left = l;
@@ -39,7 +42,7 @@ public class Text_Element {
         this.right = l + w;
         this.height = h;
         this.font = f;
-        this.format = f2;
+        this.style = f2;
         this.typ = t2;
         this.last_top = t; // no line merged to this text element
         this.first_top = t;
@@ -66,7 +69,7 @@ public class Text_Element {
 
     public Object clone() {
         Text_Element t = new Text_Element(this.value, this.top, this.left,
-                this.width, this.height, this.font, this.format, this.typ);
+                this.width, this.height, this.font, this.style, this.typ);
         return t;
     }
 
@@ -92,28 +95,101 @@ public class Text_Element {
         int height = Integer.parseInt(text.getAttribute("height").getValue());
         int font = Integer.parseInt(text.getAttribute("font").getValue());
 
-        String typ = "number";
+        Type typ = Type.NUMBER;
         try {
             Integer.parseInt(value);
             Float.parseFloat(value);
         } catch (NumberFormatException nfe) {
-            typ = "text";
+            typ = Type.TEXT;
         }
 
-        List<Element> format_list = text.getChildren("b");
-        List<Element> format_list2 = text.getChildren("i");
+        List<Element> bold_elements = text.getChildren("b");
+        List<Element> italic_elements = text.getChildren("i");
 
-        String format = "";
-        if (format_list.size() > 0) {
-            format = "bold";
-        } else if (format_list2.size() > 0) {
-            format = "italic";
-        } else if (format_list.size() > 0 && format_list2.size() > 0) {
-            format = "bolditalic";
+        Style style;
+        if (bold_elements.size() > 0) {
+            if (italic_elements.size() > 0) {
+                style = Style.BOLD_ITALIC;
+            } else {
+                style = Style.BOLD;
+            }
+        } else if (italic_elements.size() > 0) {
+            style = Style.ITALIC;
+        } else {
+            style = Style.NORMAL;
         }
 
-        return new Text_Element(value, top, left, width, height, font, format,
+        return new Text_Element(value, top, left, width, height, font, style,
                 typ);
 
+    }
+    
+
+    /**
+     * Test whether another TextElement is contained by, contains, or overlaps
+     * this one.
+     * 
+     * @param te
+     *            other Text_Element
+     * @return true if they intersect in any way.
+     */
+    public boolean intersects(Text_Element te) {
+        return Text_Element.intersect(this, te);
+    }
+
+    /**
+     * Test whether two Text_Element are contained by or overlap each other this
+     * one.
+     * 
+     * @param te1
+     *            firstText_Element
+     * @param te2
+     *            other Text_Element
+     * @return true if they intersect in any way.
+     */
+    public static boolean intersect(Text_Element te1, Text_Element te2) {
+        int l1 = te1.left;
+        int r1 = te1.left + te1.width;
+
+        int l2 = te2.left;
+        int r2 = te2.left + te2.width;
+
+        return ((l1 >= l2 && r1 <= r2) ||
+                (l1 >= l2 && l1 <= r2 && r1 > r2) ||
+                (l1 < l2 && r1 >= l2 && r1 <= r2) ||
+                (l2 >= l1 && r2 <= r1)); 
+    }
+    
+    public static int belong_together(Text_Element t, Text_Element n) {
+
+        int n_letter_width = 0;
+        int t_letter_width = 0;
+
+        if (n.value.length() != 0) {
+            n_letter_width = n.width/n.value.length();
+
+            if (t.value.length() != 0) {
+                t_letter_width = t.width/t.value.length();
+            }
+
+            int distance = n.left - (t.left + t.width);
+            int t_right = t.left + t.width;
+            int n_right = n.left + n.width;
+
+            if (t.left > n.left && t_right < n_right) {
+                return 1;
+            } else if (n.left > t.left && n_right < t_right) {
+                return 1;
+            } else if (n_right > t.left && n_right < t_right) {
+                return 1;
+            } else if (n.left > t.left && n.left < t_right) {
+                return 1;
+            } else if (distance <= n_letter_width && distance <= t_letter_width) {
+                return 0;
+            }
+        } else if (n.value.length() == 0) {
+            return 0;
+        }
+        return -1;
     }
 }
