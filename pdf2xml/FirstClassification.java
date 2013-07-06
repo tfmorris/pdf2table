@@ -29,6 +29,8 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import pdf2xml.Text_Element.Type;
+
 
 /**
  * Comparator to sort elements by the Y values of the tops.
@@ -150,7 +152,7 @@ public class FirstClassification {
                         int right_distance = Math.abs((n.left + n.width) - (t.left+t.width));
 
                         if (top_distance < t.height/2 && n.typ.equals(t.typ) 
-                                && n.typ.equals("text") && ((left_distance < 3) 
+                                && n.typ == Type.TEXT && ((left_distance < 3) 
                                         || (right_distance < 3))) {
 
                             String s = n.value + "\n" + t.value;
@@ -170,7 +172,7 @@ public class FirstClassification {
                     if (control == false) {
 
 
-                        /*      if (belongs == 1)  {
+                        /*	if (belongs == 1)  {
                 Multiline_Block current_mlb = (Multiline_Block) this.mlbs.lastElement();
                 actualize_mlb_values(current_mlb, l);
                  }
@@ -442,7 +444,7 @@ public class FirstClassification {
                             - (t.left + t.width));
 
                     if (top_distance < t.height / 2 && t.typ.equals(n.typ)
-                            && t.typ.equals("text")
+                            && t.typ == Type.TEXT
                             && ((left_distance < 3) || (right_distance < 3))) {
 
                         String s = t.value + " " + n.value;
