@@ -15,7 +15,6 @@ import java.util.List;
 import org.jdom2.Element;
 
 
-
 class TopComparator implements Comparator<Text_Element> {
 
     public int compare(Text_Element t1, Text_Element t2) {
@@ -23,12 +22,14 @@ class TopComparator implements Comparator<Text_Element> {
     }
 }
 
+
 class LeftComparator implements Comparator<Text_Element> {
 
     public int compare(Text_Element t1, Text_Element t2) {
         return (t1.left - t2.left);
     }
 }
+
 
 public class Text_Element {
 
@@ -42,6 +43,7 @@ public class Text_Element {
     int height;
     int right;
     int font;
+    int font_size;
     Style style = Style.NORMAL;
     Type typ;
     int count_lines;
@@ -51,8 +53,8 @@ public class Text_Element {
     int colspan = 1;
     boolean artificial;
 
-    public Text_Element(String v, int t, int l, int w, int h, int f, Style f2,
-            Type t2) {
+    public Text_Element(String v, int t, int l, int w, int h, int f, int size,
+            Style f2, Type t2) {
         this.value = v;
         this.top = t;
         this.left = l;
@@ -60,6 +62,7 @@ public class Text_Element {
         this.right = l + w;
         this.height = h;
         this.font = f;
+        this.font_size = size;
         this.style = f2;
         this.typ = t2;
         this.last_top = t; // no line merged to this text element
@@ -87,7 +90,8 @@ public class Text_Element {
 
     public Object clone() {
         Text_Element t = new Text_Element(this.value, this.top, this.left,
-                this.width, this.height, this.font, this.style, this.typ);
+                this.width, this.height, this.font, this.font_size, this.style,
+                this.typ);
         return t;
     }
 
@@ -103,8 +107,9 @@ public class Text_Element {
         int t_right = te.left + te.width;
         width = t_right - left;
     }
+    
 
-    public static Text_Element getTextElement(Element text) {
+    public static Text_Element getTextElement(Element text, List<Font> fonts) {
         String value = text.getValue().trim();
 
         int top = Integer.parseInt(text.getAttribute("top").getValue());
@@ -137,8 +142,11 @@ public class Text_Element {
             style = Style.NORMAL;
         }
 
-        return new Text_Element(value, top, left, width, height, font, style,
-                typ);
+        // This is a hack, but we need access to the font specs to know the size
+        int font_size = fonts.get(font).size;
+        
+        return new Text_Element(value, top, left, width, height, font,
+                font_size, style, typ);
 
     }
     

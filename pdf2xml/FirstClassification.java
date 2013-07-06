@@ -215,7 +215,7 @@ public class FirstClassification {
         Collections.sort(text_elements, new TopElementComparator());
         
         for (Element e : text_elements) {
-            Text_Element current_t = Text_Element.getTextElement(e);
+            Text_Element current_t = Text_Element.getTextElement(e, fonts);
 
             int right_column = Math.abs(current_t.left/text_columns_width);
 
@@ -226,7 +226,7 @@ public class FirstClassification {
                 if (current_tc.lines.size() > 0) {
                     Line l = current_tc.lines.get(current_tc.lines.size()-1);
 
-                    if (in_the_line(current_t, l)) {
+                    if (l.contains(current_t)) {
                         // exactly in the boundaries of the line
                         l.texts.add(current_t);
                         l.add(current_t);
@@ -249,6 +249,9 @@ public class FirstClassification {
     }
 
 
+    /**
+     * Return a list of fonts on a given page.
+     */
     private List<Font> getFonts(Element page) {
         List<Font> fonts = new ArrayList<Font>();
         int page_number = Integer.parseInt(page.getAttribute("number").getValue());
@@ -265,24 +268,6 @@ public class FirstClassification {
     }
 
 
-    private boolean in_the_line(Text_Element t, Line l) {
-        Font f = this.fonts.get(t.font);
-
-        // int text_bottom = t.top + t.height;
-        int text_bottom = t.top + f.size;
-
-        if (t.top >= l.first_top && t.top <= l.bottom) {
-            return true;
-        } else if (text_bottom >= l.first_top && text_bottom <= l.bottom) {
-            return true;
-        } else if (t.top <= l.first_top && text_bottom >= l.bottom) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    
     private void multiline_block_merge() {
         int steps_backward = 0;
         int steps_forward = 0;

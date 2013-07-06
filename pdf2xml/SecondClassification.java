@@ -10,11 +10,21 @@ package pdf2xml;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Second class of table builder. Naming and partitioning is a historical
+ * artifact and is only preserved for the benefit of those familiar with the old
+ * code base. All control flow is now in {@link FirstClassification#run(String)}.
+ * 
+ */
 public class SecondClassification {
 
     // multiline blocks with less than 3 lines will be ignored
     private static final int MIN_BLOCK_LINES = 2;
 
+    /**
+     * Analyze a list of multiline blocks and one of lines, return a list of 
+     * tables that they represent.
+     */
     static List<Table> decompose_tables(List<Multiline_Block> blocks, List<Line> lines) {
         List<Table> tables = new ArrayList<Table>();
 

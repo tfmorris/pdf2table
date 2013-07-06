@@ -19,7 +19,6 @@ public class Line {
     int height;
     int leftmost;
     int rightmost;
-    int font;
     int last_top;
     int first_top;
     int used_space;
@@ -35,7 +34,6 @@ public class Line {
         height = bottom - top;
         leftmost = t.left;
         rightmost = t.left + t.width;
-        font = t.font;
         last_top = t.top;
         first_top = t.top;
         used_space = t.width * t.height;
@@ -48,9 +46,31 @@ public class Line {
         height = bottom - top;
         leftmost = Math.min(t.left, leftmost);
         rightmost = Math.max(rightmost, t.left + t.width);
-        font = t.font;
         last_top = Math.max(t.top, last_top);
         first_top = Math.min(t.top, first_top);
         used_space += t.width * t.height;
+    }
+
+    /**
+     * Test whether text element is contained by this line.
+     * 
+     * @param te
+     *            Text_Element to test
+     * @return true if contained by this line.
+     */
+    boolean contains(Text_Element te) {
+    
+        // int text_bottom = t.top + t.height;
+        int text_bottom = te.top + te.font_size;
+    
+        if (te.top >= first_top && te.top <= bottom) {
+            return true;
+        } else if (text_bottom >= first_top && text_bottom <= bottom) {
+            return true;
+        } else if (te.top <= first_top && text_bottom >= bottom) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
