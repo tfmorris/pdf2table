@@ -50,8 +50,8 @@ public class FirstClassification {
     List<Multiline_Block> mlbs;
     boolean interactive_extraction;
     String path;
-    int removed_elements_before;
-    int removed_elements_after;
+//    int removed_elements_before;
+//    int removed_elements_after;
     
     int distance_sum = 0;
 
@@ -61,8 +61,8 @@ public class FirstClassification {
         this.mlbs = new ArrayList<Multiline_Block>();
         this.interactive_extraction = interactivity;
         this.path = p;
-        this.removed_elements_before = 0;
-        this.removed_elements_after = 0;
+//        this.removed_elements_before = 0;
+//        this.removed_elements_after = 0;
     }
 
     
@@ -77,7 +77,7 @@ public class FirstClassification {
                 lines_before = doPage(lines_before, page);
             } // end of while pages
 
-            multiline_block_merge();
+            multiline_block_merge(this.mlbs, this.lines);
 
             List<Table> tables = SecondClassification.decompose_tables(mlbs, lines);
 
@@ -170,11 +170,11 @@ public class FirstClassification {
                     if (control == false) {
 
 
-                        /*	if (belongs == 1)  {
+                        /*      if (belongs == 1)  {
                 Multiline_Block current_mlb = (Multiline_Block) this.mlbs.lastElement();
                 actualize_mlb_values(current_mlb, l);
-        	 }
-        	 else {*/
+                 }
+                 else {*/
                         //if (belongs == 0 || count_single_lines > 5) {
                         Multiline_Block current_mlb = this.mlbs.get(this.mlbs.size()-1);
                         int mlb_element_count = current_mlb.end - current_mlb.begin;
@@ -268,24 +268,31 @@ public class FirstClassification {
     }
 
 
-    private void multiline_block_merge() {
+    /**
+     * Merge contents of multi-line blocks.  This will modify the collections
+     * in place.
+     * 
+     * @param blocks
+     * @param linez
+     */
+    private static void multiline_block_merge(List<Multiline_Block> blocks, List<Line> linez) {
         int steps_backward = 0;
         int steps_forward = 0;
         int before = 0;
         int after = 0;
 
-        this.removed_elements_before = 0;
-        this.removed_elements_after = 0;
+        int removed_elements_before = 0;
+        int removed_elements_after = 0;
 
-        for (int i=0;i<this.mlbs.size();i++) {
+        for (int i=0;i<blocks.size();i++) {
 
-            Multiline_Block mlb2 = this.mlbs.get(i);
+            Multiline_Block mlb2 = blocks.get(i);
 
-            mlb2.begin = mlb2.begin - this.removed_elements_before - this.removed_elements_after;
-            mlb2.end = mlb2.end - this.removed_elements_before - this.removed_elements_after;
+            mlb2.begin = mlb2.begin - removed_elements_before - removed_elements_after;
+            mlb2.end = mlb2.end - removed_elements_before - removed_elements_after;
 
-            before = this.removed_elements_before;
-            after = this.removed_elements_after;
+            before = removed_elements_before;
+            after = removed_elements_after;
 
             if (i==0) {
                 // first multiline block
@@ -295,71 +302,88 @@ public class FirstClassification {
                     steps_backward = mlb2.begin - 1;
                 }
                 steps_forward = 0;
-                line_merge(i, steps_backward, steps_forward);
-                mlb2.begin = mlb2.begin - (this.removed_elements_before - before);
-                mlb2.end = mlb2.end - (this.removed_elements_before - before);
-            } else if (i == this.mlbs.size() - 1) {
+                int[] counts = line_merge(mlb2, linez, steps_backward, steps_forward);
+                removed_elements_before += counts[0];
+                removed_elements_after += counts[1];
+                mlb2.begin = mlb2.begin - (removed_elements_before - before);
+                mlb2.end = mlb2.end - (removed_elements_before - before);
+            } else if (i == blocks.size() - 1) {
                 // last multiline block
-                if (mlb2.end + 10 < this.lines.size()) {
+                if (mlb2.end + 10 < linez.size()) {
                     steps_forward = 10;
                 } else {
-                    steps_forward = this.lines.size() - mlb2.end - 1;
+                    steps_forward = linez.size() - mlb2.end - 1;
                 }
                 steps_backward = 0;
-                line_merge(i, steps_backward, steps_forward);
+                int[] counts = line_merge(mlb2, linez, steps_backward, steps_forward);
+                removed_elements_before += counts[0];
+                removed_elements_after += counts[1];
             } else {
                 // every other multiline block between the first and the last
-                Multiline_Block mlb1 = this.mlbs.get(i-1);
-                Multiline_Block mlb3 = this.mlbs.get(i+1);
+                Multiline_Block mlb1 = blocks.get(i-1);
+                Multiline_Block mlb3 = blocks.get(i+1);
 
                 steps_forward = mlb3.begin - mlb2.end-1;
                 steps_backward = mlb2.begin - mlb1.end-1;
 
                 if (mlb2.page == mlb3.page && mlb2.page != mlb1.page) {
                     steps_backward = 0;
-                    line_merge(i, steps_backward, steps_forward);
+                    int[] counts = line_merge(mlb2, linez, steps_backward, steps_forward);
+                    removed_elements_before += counts[0];
+                    removed_elements_after += counts[1];
                 } else if (mlb2.page == mlb1.page && mlb2.page != mlb3.page) {
                     steps_forward = 0;
-                    line_merge(i, steps_backward, steps_forward);
+                    int[] counts = line_merge(mlb2, linez, steps_backward, steps_forward);
+                    removed_elements_before += counts[0];
+                    removed_elements_after += counts[1];
                 } else if (mlb2.page == mlb1.page && mlb2.page == mlb3.page) {
-                    line_merge(i, steps_backward, steps_forward);
+                    int[] counts = line_merge(mlb2, linez, steps_backward, steps_forward);
+                    removed_elements_before += counts[0];
+                    removed_elements_after += counts[1];
                 } // if mlbs on the same page
 
                 boolean merge_with_before = false;
 
-                if (mlb2.begin - mlb1.end <= 3 && mlb2.page == mlb1.page && (Math.abs(mlb2.max_elements - mlb1.max_elements) <=1))  {
-                    mlb1.end = mlb2.end - (this.removed_elements_before - before);
-                    this.mlbs.remove(i);
+                if (mlb2.begin - mlb1.end <= 3 && mlb2.page == mlb1.page 
+                        && (Math.abs(mlb2.max_elements - mlb1.max_elements) <=1))  {
+                    mlb1.end = mlb2.end - (removed_elements_before - before);
+                    blocks.remove(i);
                     merge_with_before = true;
                     mlb1.add(mlb2);
                     i--;
                 }
-                if (mlb3.begin - mlb2.end <= 3 && mlb3.page == mlb2.page && (Math.abs(mlb2.max_elements - mlb3.max_elements) <=1)) {
+                if (mlb3.begin - mlb2.end <= 3 && mlb3.page == mlb2.page 
+                        && (Math.abs(mlb2.max_elements - mlb3.max_elements) <=1)) {
                     if (merge_with_before == false) {
-                        mlb2.begin = mlb2.begin - (this.removed_elements_before - before);
-                        mlb2.end = mlb3.end - (this.removed_elements_before - before) - (this.removed_elements_after - after);
+                        mlb2.begin = mlb2.begin - (removed_elements_before - before);
+                        mlb2.end = mlb3.end - (removed_elements_before - before) 
+                                - (removed_elements_after - after);
                         mlb2.add(mlb3);
-                        this.mlbs.remove(i+1);
+                        blocks.remove(i+1);
                     }
                     else {
-                        mlb1.end = mlb3.end - (this.removed_elements_before - before) - (this.removed_elements_after - after);
+                        mlb1.end = mlb3.end
+                                - (removed_elements_before - before)
+                                - (removed_elements_after - after);
                         mlb1.add(mlb3);
-                        this.mlbs.remove(i+1);
+                        blocks.remove(i+1);
                     }
                 }
             }
         }
     }
 
-    private void line_merge(int pos, int steps_back, int steps_for) {
-        Multiline_Block mlb = this.mlbs.get(pos);
-        Line first_line = this.lines.get(mlb.begin);
-        Line last_line = this.lines.get(mlb.end);
+
+    private static int[] line_merge(Multiline_Block mlb, List<Line> lines, int steps_back, int steps_for) {
+        Line first_line = lines.get(mlb.begin);
+        Line last_line = lines.get(mlb.end);
         int count = 0;
+        int removed_elements_before = 0;
+        int removed_elements_after = 0;
         boolean merge_control = true;
 
         for (int i=1; i<=steps_back && merge_control == true;i++) {
-            Line pl = this.lines.get(mlb.begin - i);
+            Line pl = lines.get(mlb.begin - i);
             List<Text_Element> storage = new ArrayList<Text_Element>(first_line.texts);
 
             int top_distance = first_line.first_top - pl.bottom;
@@ -392,8 +416,8 @@ public class FirstClassification {
                     first_line.add(t);
                 }
 
-                this.lines.remove(mlb.begin - i);
-                this.removed_elements_before++;
+                lines.remove(mlb.begin - i);
+                removed_elements_before++; 
             } else {
                 merge_control = false;
             }
@@ -403,7 +427,7 @@ public class FirstClassification {
         merge_control = true;
         
         for (int i = 1; i <= steps_for && merge_control == true; i++) {
-            Line nl = this.lines.get(mlb.end + i);
+            Line nl = lines.get(mlb.end + i);
             List<Text_Element> storage = new ArrayList<Text_Element>(
                     last_line.texts);
 
@@ -435,13 +459,14 @@ public class FirstClassification {
                     Text_Element t = last_line.texts.get(p);
                     last_line.add(t);
                 }
-                this.lines.remove(mlb.end + i);
-                this.removed_elements_after++;
+                lines.remove(mlb.end + i);
+                removed_elements_after++;
             } else {
                 merge_control = false;
             }
             count = 0;
         }
+        return new int[] {removed_elements_before, removed_elements_after};
     }
 	
     private void showErrorFrame(final String file_name) {
