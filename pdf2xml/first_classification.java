@@ -30,26 +30,24 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 
-class top_comparator implements Comparator<Element>  {
-	  
-	  public int compare(Element e1, Element e2) {
-	    int top1 = Integer.parseInt(e1.getAttribute("top").getValue());            	          	     
-	    int top2 = Integer.parseInt(e2.getAttribute("top").getValue());            	          	     
-	    
-	    return (top1 - top2);
-	  }
-	  
+class TopElementComparator implements Comparator<Element> {
+
+    public int compare(Element e1, Element e2) {
+        int top1 = Integer.parseInt(e1.getAttribute("top").getValue());
+        int top2 = Integer.parseInt(e2.getAttribute("top").getValue());
+        return (top1 - top2);
+    }
+
 }
 
-class top_comparator_for_texts implements Comparator<Text_Element>  {
-	  
-	  public int compare(Text_Element t1, Text_Element t2) {
-	    return (t1.top - t2.top);
-	  }
-	  
+class TopTextElementomparator implements Comparator<Text_Element> {
+
+    public int compare(Text_Element t1, Text_Element t2) {
+        return (t1.top - t2.top);
+    }
 }
 
-class left_comparator implements Comparator<Text_Element>  {
+class LeftTextElementComparator implements Comparator<Text_Element>  {
 	  
 	  public int compare(Text_Element t1, Text_Element t2) {
 	    return (t1.left - t2.left);
@@ -136,7 +134,7 @@ List<Element> current_text_elements;
       	this.current_text_elements  = page.getChildren("text"); 
       	Element[] e_array = new Element[this.current_text_elements.size()];
       	this.current_text_elements.toArray(e_array);
-        Arrays.sort(e_array, new top_comparator());
+        Arrays.sort(e_array, new TopElementComparator());
 
         int distance = 0;      
         Text_Column current_tc;
@@ -194,7 +192,7 @@ List<Element> current_text_elements;
         	Line l = this.lines.get(o);
         	Text_Element[] t_array = new Text_Element[l.texts.size()];
         	l.texts.toArray(t_array);        	 
-        	Arrays.sort(t_array, new left_comparator());
+        	Arrays.sort(t_array, new LeftTextElementComparator());
         	l.texts.clear();
         	l.texts.addAll(Arrays.asList(t_array));       
         	   	  
@@ -234,7 +232,7 @@ List<Element> current_text_elements;
               	  Text_Element[] t_array2 = new Text_Element[t.elements.size()];
              	  t.elements.toArray(t_array2);                	       	               	               	  
 
-              	  Arrays.sort(t_array2, new top_comparator_for_texts());              	                	  
+              	  Arrays.sort(t_array2, new TopTextElementomparator());              	                	  
               	  String value = "";
              	  for (int u=0;u<t_array2.length;u++) {
              	  	value += t_array2[u].value + " ";
