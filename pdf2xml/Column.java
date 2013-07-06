@@ -27,11 +27,7 @@ public class Column {
   }
   
   public Column() {
-  	this.cells = new ArrayList<Text_Element>();
-  	this.left = -1;
-  	this.right = -1;
-  	this.empty_cells = 0;
-  	this.header = -1;
+      this(-1,-1);
   }
 
   public Object clone() {
