@@ -274,8 +274,9 @@ public class SemiOutputFrame extends Frame {
         }
     }
 
-    
+    // TODO: Add a merge all remaining tables function/button
     public void merge() {
+        // TODO: Handle header skipping in table extension
         try {
             if (this.counter >= 2) {
                 Table now = this.tables.get(this.counter - 1);
@@ -283,7 +284,7 @@ public class SemiOutputFrame extends Frame {
 
                 int count_of_columns = Math.min(now.columns.size(),
                         previous.columns.size());
-                System.out.println(count_of_columns);
+//                System.out.println(count_of_columns);
                 for (int i = 0; i < count_of_columns; i++) {
                     Column previous_column = previous.columns.get(i);
                     Column now_column = now.columns.get(i);
@@ -475,6 +476,7 @@ public class SemiOutputFrame extends Frame {
 
     
     public void change_table(Table t) {
+        // FIXME:  What is this trying to do?  It's a noop
         Table current_table = this.tables.get(this.counter);
         current_table = (Table) t.clone();
     }
